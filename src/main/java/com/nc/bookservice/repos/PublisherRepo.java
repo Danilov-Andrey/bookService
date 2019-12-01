@@ -1,6 +1,6 @@
-package app.repos;
+package com.nc.bookservice.repos;
 
-import app.entities.Publisher;
+import com.nc.bookservice.entities.Publisher;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
 

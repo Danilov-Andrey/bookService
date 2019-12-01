@@ -1,7 +1,7 @@
-package app.services;
+package com.nc.bookservice.services;
 
-import app.entities.Copies;
-import app.repos.CopiesRepo;
+import com.nc.bookservice.entities.Copies;
+import com.nc.bookservice.repos.CopiesRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;

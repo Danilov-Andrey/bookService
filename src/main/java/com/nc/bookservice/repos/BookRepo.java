@@ -1,6 +1,6 @@
-package app.repos;
+package com.nc.bookservice.repos;
 
-import app.entities.Book;
+import com.nc.bookservice.entities.Book;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;

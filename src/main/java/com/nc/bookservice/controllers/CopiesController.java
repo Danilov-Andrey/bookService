@@ -1,7 +1,7 @@
-package app.controllers;
+package com.nc.bookservice.controllers;
 
-import app.entities.Copies;
-import app.services.CopiesService;
+import com.nc.bookservice.entities.Copies;
+import com.nc.bookservice.services.CopiesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

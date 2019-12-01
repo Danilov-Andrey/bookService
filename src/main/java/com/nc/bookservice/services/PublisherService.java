@@ -1,8 +1,8 @@
-package app.services;
+package com.nc.bookservice.services;
 
-import app.entities.Book;
-import app.entities.Publisher;
-import app.repos.PublisherRepo;
+import com.nc.bookservice.entities.Book;
+import com.nc.bookservice.entities.Publisher;
+import com.nc.bookservice.repos.PublisherRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;

@@ -1,8 +1,8 @@
-package app.controllers;
+package com.nc.bookservice.controllers;
 
-import app.entities.Author;
-import app.entities.Book;
-import app.services.AuthorService;
+import com.nc.bookservice.entities.Author;
+import com.nc.bookservice.entities.Book;
+import com.nc.bookservice.services.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package app;
+package com.nc.bookservice;
 
 
 import org.springframework.boot.SpringApplication;

@@ -1,4 +1,4 @@
-package app.entities.update;
+package com.nc.bookservice.entities.update;
 
 public class BookUpdate {
     private String name;

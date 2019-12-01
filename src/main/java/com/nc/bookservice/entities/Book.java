@@ -1,4 +1,4 @@
-package app.entities;
+package com.nc.bookservice.entities;
 
 import javax.persistence.*;
 
