@@ -55,5 +55,10 @@ public class PublisherService {
     public List<Book> findPublishersBooks(int id, int pageNumber, int rowPerPage) throws Exception {
         return bookService.publishersBooks(id, pageNumber, rowPerPage);
     }
+
+    public Publisher findByName(String publisherName){
+        Publisher publisher = publisherRepo.findByName(publisherName);
+        return publisher;
+    }
 }
 

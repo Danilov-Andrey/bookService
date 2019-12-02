@@ -5,7 +5,6 @@ import com.nc.bookservice.entities.Publisher;
 import com.nc.bookservice.repos.AuthorRepo;
 import com.nc.bookservice.entities.Author;
 import com.nc.bookservice.entities.Book;
-import com.nc.bookservice.repos.PublisherRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,7 @@ public class AuthorService {
     private AuthorRepo authorRepo;
 
     @Autowired
-    private PublisherRepo publisherRepo;
+    private PublisherService publisherService;
 
     @Autowired
     private BookService bookService;
@@ -68,7 +67,7 @@ public class AuthorService {
 
     public void addNewBook(int id, String name, int year, int count, int rate, String publisherName) throws Exception {
         Author author = findById(id);
-        Publisher publisher = publisherRepo.findByName(publisherName);
+        Publisher publisher = publisherService.findByName(publisherName);
         Copies copies = new Copies(count, rate);
         if (publisher == null){
             publisher = new Publisher(publisherName);
