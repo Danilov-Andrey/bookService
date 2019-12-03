@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
+@CrossOrigin
 @Controller
 @RequestMapping(path="/books")
 public class BookController {
@@ -18,10 +19,11 @@ public class BookController {
     BookService bookService;
 
     @GetMapping()
-    public @ResponseBody Iterable<Book> getAllBooks(
+    public @ResponseBody ResponseEntity<?> getAllBooks(
             @RequestParam int pageNumber,
             @RequestParam int rowPerPage) {
-        return bookService.findAll(pageNumber,rowPerPage);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body( bookService.findAll(pageNumber,rowPerPage));
     }
 
     @GetMapping(path="{id}")
