@@ -1,22 +1,26 @@
 package com.nc.bookservice.controllers;
 
+import com.nc.bookservice.dto.DataPagination;
 import com.nc.bookservice.entities.Copies;
 import com.nc.bookservice.services.CopiesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
-@Controller
+@RestController
 @RequestMapping(path = "copies")
 public class CopiesController {
-    @Autowired
     private CopiesService copiesService;
 
-    @GetMapping()
-    public @ResponseBody Iterable<Copies> getAllCopies(
+    @Autowired
+    public CopiesController(CopiesService copiesService){
+        this.copiesService = copiesService;
+    }
+
+    @GetMapping
+    public DataPagination<Copies> getAllCopies(
             @RequestParam int pageNumber,
             @RequestParam int rowPerPage)
     {
@@ -24,8 +28,7 @@ public class CopiesController {
     }
 
     @GetMapping(path = "{id}")
-    public @ResponseBody
-    Copies getCopies(@PathVariable int id) throws Exception{
+    public Copies getCopies(@PathVariable int id) throws Exception{
         try {
             return copiesService.findById(id);
         } catch (Exception e) {

@@ -1,5 +1,6 @@
 package com.nc.bookservice.services;
 
+import com.nc.bookservice.dto.DataPagination;
 import com.nc.bookservice.entities.Copies;
 import com.nc.bookservice.entities.Publisher;
 import com.nc.bookservice.repos.AuthorRepo;
@@ -14,17 +15,17 @@ import java.util.List;
 
 @Service
 public class AuthorService {
-    @Autowired
     private AuthorRepo authorRepo;
 
-    @Autowired
     private PublisherService publisherService;
 
-    @Autowired
     private BookService bookService;
 
-    private boolean existsById(int id) {
-        return authorRepo.existsById(id);
+    @Autowired
+    public AuthorService(AuthorRepo authorRepo, PublisherService publisherService, BookService bookService){
+     this.authorRepo = authorRepo;
+     this.publisherService = publisherService;
+     this.bookService = bookService;
     }
 
     public Author findById(int id) throws Exception {
@@ -32,13 +33,15 @@ public class AuthorService {
         if (author==null) {
             throw new Exception("Cannot find author with id: " + id);
         }
-        else return author;
+        return author;
     }
 
-    public List<Author> findAll(int pageNumber, int rowPerPage) {
+    public DataPagination<Author> findAll(int pageNumber, int rowPerPage) {
         List<Author> authors = new ArrayList<>();
+        int totalPage = (int) Math.ceil((float)authorRepo.count()/rowPerPage);
         authorRepo.findAll(PageRequest.of(pageNumber - 1, rowPerPage)).forEach(authors::add);
-        return authors;
+        DataPagination dataPagination = new DataPagination(totalPage, pageNumber, authors);
+        return dataPagination;
     }
 
     public List<Book> findAuthorsBooks(int id, int pageNumber, int rowPerPage) throws Exception {
@@ -57,12 +60,10 @@ public class AuthorService {
     }
 
     public void deleteById(int id) throws Exception {
-        if (!existsById(id)) {
+        if (!authorRepo.existsById(id)) {
             throw new Exception("Cannot find author with id: " + id);
         }
-        else {
-            authorRepo.deleteById(id);
-        }
+        authorRepo.deleteById(id);
     }
 
     public void addNewBook(int id, String name, int year, int count, int rate, String publisherName) throws Exception {

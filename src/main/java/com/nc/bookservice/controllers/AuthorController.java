@@ -1,31 +1,35 @@
 package com.nc.bookservice.controllers;
 
+import com.nc.bookservice.dto.DataPagination;
 import com.nc.bookservice.entities.Author;
 import com.nc.bookservice.entities.Book;
 import com.nc.bookservice.services.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 
 @CrossOrigin
-@Controller
+@RestController
 @RequestMapping(path="/authors")
 public class AuthorController {
-    @Autowired
     private AuthorService authorService;
 
-    @GetMapping()
-    public @ResponseBody Iterable<Author> getAllAuthors(
+    @Autowired
+    public AuthorController(AuthorService authorService){
+        this.authorService = authorService;
+    }
+
+    @GetMapping
+    public DataPagination<Author> getAllAuthors(
             @RequestParam int pageNumber,
             @RequestParam int rowPerPage) {
         return authorService.findAll(pageNumber,rowPerPage);
     }
 
     @GetMapping(path = "{id}/books")
-    public @ResponseBody Iterable<Book> getAuthorsBooks(
+    public Iterable<Book> getAuthorsBooks(
             @PathVariable("id") int id,
             @RequestParam int pageNumber,
             @RequestParam int rowPerPage) throws Exception {
@@ -33,8 +37,7 @@ public class AuthorController {
     }
 
     @GetMapping(path="{id}")
-    public @ResponseBody
-    Author getAuthor(@PathVariable int id) throws Exception {
+    public Author getAuthor(@PathVariable int id) throws Exception {
         try{
             return authorService.findById(id);
         } catch (Exception e){
@@ -42,9 +45,8 @@ public class AuthorController {
         }
     }
 
-    @PostMapping("create")
-    public @ResponseBody
-    ResponseEntity<Author> createNewAuthor (
+    @PostMapping
+    public ResponseEntity<Author> createAuthor (
             @RequestBody Author newAuthor
     ) throws Exception {
         try {
@@ -87,8 +89,7 @@ public class AuthorController {
     }
 
     @DeleteMapping(path="{id}")
-    public @ResponseBody
-    ResponseEntity<String> deleteAuthor(@PathVariable int id) throws Exception {
+    public ResponseEntity<String> deleteAuthor(@PathVariable int id) throws Exception {
         try {
             authorService.deleteById(id);
             return new ResponseEntity<>(HttpStatus.OK);

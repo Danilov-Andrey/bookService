@@ -1,5 +1,6 @@
 package com.nc.bookservice.services;
 
+import com.nc.bookservice.dto.DataPagination;
 import com.nc.bookservice.entities.Book;
 import com.nc.bookservice.entities.Publisher;
 import com.nc.bookservice.repos.PublisherRepo;
@@ -12,26 +13,31 @@ import java.util.List;
 
 @Service
 public class PublisherService {
-    @Autowired
+
     private PublisherRepo publisherRepo;
 
-    @Autowired
     private BookService bookService;
 
-    public boolean existsById(int id) { return publisherRepo.existsById(id);}
+    @Autowired
+    public PublisherService(PublisherRepo publisherRepo, BookService bookService){
+        this.bookService = bookService;
+        this.publisherRepo = publisherRepo;
+    }
 
     public Publisher findById(int id) throws Exception {
         Publisher publisher = publisherRepo.findById(id).orElse(null);
         if (publisher == null){
             throw new Exception("Cannot find publisher with id " + id);
         }
-        else return publisher;
+        return publisher;
     }
 
-    public List<Publisher> findAll(int pageNumber, int rowPerPage){
+    public DataPagination<Publisher> findAll(int pageNumber, int rowPerPage){
         List<Publisher> publishers = new ArrayList<>();
+        int totalPage = (int) Math.ceil((float)publisherRepo.count()/rowPerPage);
         publisherRepo.findAll(PageRequest.of(pageNumber - 1, rowPerPage)).forEach(publishers::add);
-        return publishers;
+        DataPagination dataPagination = new DataPagination(totalPage, pageNumber, publishers);
+        return dataPagination;
     }
 
     public Publisher save(Publisher newPublisher) {
@@ -45,11 +51,10 @@ public class PublisherService {
     }
 
     public void deleteById(int id) throws Exception{
-        if(!existsById(id)) {
+        if(!publisherRepo.existsById(id)) {
             throw new Exception("Cannot find publisher with id " + id);
-        } else {
-            publisherRepo.deleteById(id);
         }
+        publisherRepo.deleteById(id);
     }
 
     public List<Book> findPublishersBooks(int id, int pageNumber, int rowPerPage) throws Exception {

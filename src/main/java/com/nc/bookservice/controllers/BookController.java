@@ -1,34 +1,36 @@
 package com.nc.bookservice.controllers;
 
-import com.nc.bookservice.entities.update.BookUpdate;
+import com.nc.bookservice.dto.DataPagination;
+import com.nc.bookservice.models.BookUpdate;
 import com.nc.bookservice.entities.Book;
 import com.nc.bookservice.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
 @CrossOrigin
-@Controller
+@RestController
 @RequestMapping(path="/books")
 public class BookController {
-    @Autowired
-    BookService bookService;
+    private BookService bookService;
 
-    @GetMapping()
-    public @ResponseBody ResponseEntity<?> getAllBooks(
+    @Autowired
+    public BookController( BookService bookService){
+        this.bookService = bookService;
+    }
+
+    @GetMapping
+    public DataPagination<Book> getAllBooks(
             @RequestParam int pageNumber,
             @RequestParam int rowPerPage) {
-        return ResponseEntity.status(HttpStatus.OK)
-                .body( bookService.findAll(pageNumber,rowPerPage));
+        return bookService.findAll(pageNumber,rowPerPage);
     }
 
     @GetMapping(path="{id}")
-    public @ResponseBody
-    Book getBook(@PathVariable int id) throws Exception {
+    public Book getBook(@PathVariable int id) throws Exception {
         try{
             return bookService.findById(id);
         } catch (Exception e){
@@ -37,8 +39,7 @@ public class BookController {
     }
 
     @DeleteMapping(path="{id}")
-    public @ResponseBody
-    ResponseEntity<Void> deleteBook(@PathVariable int id) throws Exception {
+    public ResponseEntity<Void> deleteBook(@PathVariable int id) throws Exception {
         try {
             bookService.deleteById(id);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -60,9 +61,8 @@ public class BookController {
         }
     }
 
-    @PostMapping("create")
-    public @ResponseBody
-    ResponseEntity<Book> addNewBook (
+    @PostMapping
+    public ResponseEntity<Book> addBook (
             @RequestParam int year,
             @RequestParam String name,
             @RequestParam String authorFirstName,

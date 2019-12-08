@@ -1,9 +1,10 @@
 package com.nc.bookservice.services;
 
+import com.nc.bookservice.dto.DataPagination;
 import com.nc.bookservice.entities.Book;
 import com.nc.bookservice.entities.Copies;
 import com.nc.bookservice.entities.Publisher;
-import com.nc.bookservice.entities.update.BookUpdate;
+import com.nc.bookservice.models.BookUpdate;
 import com.nc.bookservice.entities.Author;
 import com.nc.bookservice.repos.BookRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +16,11 @@ import java.util.List;
 
 @Service
 public class BookService {
-    @Autowired
     private BookRepo bookRepo;
 
-    private boolean existsById(int id){
-        return bookRepo.existsById(id);
+    @Autowired
+    public BookService(BookRepo bookRepo){
+        this.bookRepo = bookRepo;
     }
 
     public Book findById(int id) throws Exception{
@@ -27,13 +28,15 @@ public class BookService {
         if (book == null){
             throw new Exception("Cannot find book with id: " + id);
         }
-        else return book;
+        return book;
     }
 
-    public List<Book> findAll(int pageNumber, int rowPerPage){
+    public DataPagination<Book> findAll(int pageNumber, int rowPerPage){
         List<Book> books = new ArrayList<>();
         bookRepo.findAll(PageRequest.of(pageNumber - 1, rowPerPage)).forEach(books::add);
-        return books;
+        int totalPage = (int) Math.ceil((float)bookRepo.count()/rowPerPage);
+        DataPagination dataPagination = new DataPagination(totalPage, pageNumber, books);
+        return dataPagination;
     }
 
     public Book save(String authorFirstName,
@@ -56,22 +59,19 @@ public class BookService {
 
     public void updateBook(int id, BookUpdate book) throws Exception {
         Book updatedBook = findById(id);
-        if (updatedBook != null){
-            updatedBook.setName(book.getName());
-            updatedBook.setYear(book.getYear());
-            bookRepo.save(updatedBook);
-        } else {
+        if (updatedBook == null) {
             throw new Exception("Cannot find book with id: " + id);
         }
+        updatedBook.setName(book.getName());
+        updatedBook.setYear(book.getYear());
+        bookRepo.save(updatedBook);
     }
 
     public void deleteById(int id) throws Exception {
-        if (!existsById(id)) {
+        if (!bookRepo.existsById(id)) {
             throw new Exception("Cannot find book with id: " + id);
         }
-        else {
-            bookRepo.deleteById(id);
-        }
+        bookRepo.deleteById(id);
     }
 
     public List<Book> authorsBooks(int id, int pageNumber, int rowPerPage) throws Exception {

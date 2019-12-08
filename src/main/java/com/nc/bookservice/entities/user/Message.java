@@ -1,4 +1,4 @@
-package com.nc.bookservice.entities.userAuth;
+package com.nc.bookservice.entities.user;
 
 public class Message {
     private String status;

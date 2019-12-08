@@ -1,4 +1,4 @@
-package com.nc.bookservice.entities.userAuth;
+package com.nc.bookservice.entities.user;
 
 import javax.persistence.*;
 import java.util.Set;

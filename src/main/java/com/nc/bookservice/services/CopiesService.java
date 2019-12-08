@@ -1,5 +1,6 @@
 package com.nc.bookservice.services;
 
+import com.nc.bookservice.dto.DataPagination;
 import com.nc.bookservice.entities.Copies;
 import com.nc.bookservice.repos.CopiesRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +12,11 @@ import java.util.List;
 
 @Service
 public class CopiesService {
-    @Autowired
-    CopiesRepo copiesRepo;
+    private CopiesRepo copiesRepo;
 
-    private boolean existsById(int id){
-        return copiesRepo.existsById(id);
+    @Autowired
+    public CopiesService(CopiesRepo copiesRepo){
+        this.copiesRepo = copiesRepo;
     }
 
     public Copies findById(int id) throws Exception{
@@ -23,13 +24,15 @@ public class CopiesService {
         if (copies == null){
             throw new Exception("Cannot find copies with id: " + id);
         }
-        else return copies;
+        return copies;
     }
 
-    public List<Copies> findAll(int pageNumber, int rowPerPage){
+    public DataPagination<Copies> findAll(int pageNumber, int rowPerPage){
         List<Copies> copies = new ArrayList<>();
+        int totalPage = (int) Math.ceil((float)copiesRepo.count()/rowPerPage);
         copiesRepo.findAll(PageRequest.of(pageNumber - 1, rowPerPage)).forEach(copies::add);
-        return copies;
+        DataPagination dataPagination = new DataPagination(totalPage, pageNumber, copies);
+        return dataPagination;
     }
 
     public void updateCopies(int id, Copies copies) throws Exception {

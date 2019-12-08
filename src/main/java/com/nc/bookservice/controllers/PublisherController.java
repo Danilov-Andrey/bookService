@@ -1,33 +1,36 @@
 package com.nc.bookservice.controllers;
 
+import com.nc.bookservice.dto.DataPagination;
 import com.nc.bookservice.entities.Book;
 import com.nc.bookservice.entities.Publisher;
 import com.nc.bookservice.services.PublisherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
 @CrossOrigin
-@Controller
+@RestController
 @RequestMapping(path = "/publishers")
 public class PublisherController {
-    @Autowired
     private PublisherService publisherService;
 
+    @Autowired
+    public PublisherController(PublisherService publisherService){
+        this.publisherService = publisherService;
+    }
+
     @GetMapping()
-    public @ResponseBody Iterable<Publisher> getAllPublishers(
+    public  DataPagination<Publisher> getAllPublishers(
             @RequestParam int pageNumber,
             @RequestParam int rowPerPage) {
         return publisherService.findAll(pageNumber, rowPerPage);
     }
 
-    @PostMapping("create")
-    public @ResponseBody
-    ResponseEntity<Publisher> addNewPublisher(
+    @PostMapping
+    public  ResponseEntity<Publisher> addNewPublisher(
             @RequestBody Publisher newPublisher
     ) throws Exception {
         try{
@@ -52,8 +55,7 @@ public class PublisherController {
     }
 
     @DeleteMapping(path = "{id}")
-    public @ResponseBody
-    ResponseEntity<String> deletePublisher(@PathVariable int id) throws Exception{
+    public ResponseEntity<String> deletePublisher(@PathVariable int id) throws Exception{
         try {
             publisherService.deleteById(id);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -63,8 +65,7 @@ public class PublisherController {
     }
 
     @GetMapping(path="{id}")
-    public @ResponseBody
-    Publisher getPublisher(@PathVariable int id) throws Exception {
+    public Publisher getPublisher(@PathVariable int id) throws Exception {
         try{
             return publisherService.findById(id);
         } catch (Exception e){
@@ -73,7 +74,7 @@ public class PublisherController {
     }
 
     @GetMapping(path="{id}/books")
-    public @ResponseBody Iterable<Book> getAllPublishersBooks(
+    public Iterable<Book> getAllPublishersBooks(
             @PathVariable("id") int id,
             @RequestParam int pageNumber,
             @RequestParam int rowPerPage) throws Exception {
