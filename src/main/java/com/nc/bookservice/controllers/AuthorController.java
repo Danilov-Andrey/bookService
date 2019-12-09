@@ -52,15 +52,15 @@ public class AuthorController {
     ) throws Exception {
         try {
             Author author = authorService.saveAuthor(newAuthor);
-            return ResponseEntity.created(new URI("author/" + author.getId()))
+            return ResponseEntity.created(new URI("/api/authors/" + author.getId()))
                     .body(author);
         } catch (Exception e){
             throw new Exception(e.getMessage());
         }
     }
 
-    @PatchMapping("/{id}/createBook")
-    public ResponseEntity<String> addNewBook(
+    @PostMapping("/{id}")
+    public ResponseEntity<String> addAuthorsBook(
             @PathVariable("id") int id,
             @RequestBody SaveBook newBook
             ) throws Exception {
