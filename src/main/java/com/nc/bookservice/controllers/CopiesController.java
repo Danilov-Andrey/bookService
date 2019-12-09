@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController
-@RequestMapping(path = "copies")
+@RequestMapping(path = "/api/copies")
 public class CopiesController {
     private CopiesService copiesService;
 
@@ -27,7 +27,7 @@ public class CopiesController {
         return copiesService.findAll(pageNumber, rowPerPage);
     }
 
-    @GetMapping(path = "{id}")
+    @GetMapping(path = "/{id}")
     public Copies getCopies(@PathVariable int id) throws Exception{
         try {
             return copiesService.findById(id);
@@ -36,7 +36,7 @@ public class CopiesController {
         }
     }
 
-    @PatchMapping("{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<String> updateCopies(
             @PathVariable("id") int id,
             @RequestBody Copies copies

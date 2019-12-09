@@ -5,6 +5,7 @@ import com.nc.bookservice.entities.Book;
 import com.nc.bookservice.entities.Publisher;
 import com.nc.bookservice.repos.PublisherRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ public class PublisherService {
     private BookService bookService;
 
     @Autowired
-    public PublisherService(PublisherRepo publisherRepo, BookService bookService){
+    public PublisherService(@Lazy BookService bookService, PublisherRepo publisherRepo){
         this.bookService = bookService;
         this.publisherRepo = publisherRepo;
     }
@@ -40,7 +41,7 @@ public class PublisherService {
         return dataPagination;
     }
 
-    public Publisher save(Publisher newPublisher) {
+    public Publisher savePublisher(Publisher newPublisher) {
         return publisherRepo.save(newPublisher);
     }
 
@@ -57,8 +58,8 @@ public class PublisherService {
         publisherRepo.deleteById(id);
     }
 
-    public List<Book> findPublishersBooks(int id, int pageNumber, int rowPerPage) throws Exception {
-        return bookService.publishersBooks(id, pageNumber, rowPerPage);
+    public DataPagination<Book> findPublishersBooks(int id, int pageNumber, int rowPerPage) throws Exception {
+        return bookService.getPublishersBooks(id, pageNumber, rowPerPage);
     }
 
     public Publisher findByName(String publisherName){

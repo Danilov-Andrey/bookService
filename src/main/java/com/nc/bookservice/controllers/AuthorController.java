@@ -3,6 +3,7 @@ package com.nc.bookservice.controllers;
 import com.nc.bookservice.dto.DataPagination;
 import com.nc.bookservice.entities.Author;
 import com.nc.bookservice.entities.Book;
+import com.nc.bookservice.models.SaveBook;
 import com.nc.bookservice.services.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,7 +13,7 @@ import java.net.URI;
 
 @CrossOrigin
 @RestController
-@RequestMapping(path="/authors")
+@RequestMapping(path="/api/authors")
 public class AuthorController {
     private AuthorService authorService;
 
@@ -28,15 +29,15 @@ public class AuthorController {
         return authorService.findAll(pageNumber,rowPerPage);
     }
 
-    @GetMapping(path = "{id}/books")
-    public Iterable<Book> getAuthorsBooks(
+    @GetMapping(path = "/{id}/books")
+    public DataPagination<Book> getAuthorsBooks(
             @PathVariable("id") int id,
             @RequestParam int pageNumber,
             @RequestParam int rowPerPage) throws Exception {
         return authorService.findAuthorsBooks(id, pageNumber, rowPerPage);
     }
 
-    @GetMapping(path="{id}")
+    @GetMapping(path="/{id}")
     public Author getAuthor(@PathVariable int id) throws Exception {
         try{
             return authorService.findById(id);
@@ -50,7 +51,7 @@ public class AuthorController {
             @RequestBody Author newAuthor
     ) throws Exception {
         try {
-            Author author = authorService.save(newAuthor);
+            Author author = authorService.saveAuthor(newAuthor);
             return ResponseEntity.created(new URI("author/" + author.getId()))
                     .body(author);
         } catch (Exception e){
@@ -58,24 +59,20 @@ public class AuthorController {
         }
     }
 
-    @PatchMapping("{id}/createBook")
+    @PatchMapping("/{id}/createBook")
     public ResponseEntity<String> addNewBook(
             @PathVariable("id") int id,
-            @RequestParam String name,
-            @RequestParam int year,
-            @RequestParam int count,
-            @RequestParam int rate,
-            @RequestParam String publisherName
-    ) throws Exception {
+            @RequestBody SaveBook newBook
+            ) throws Exception {
         try{
-            authorService.addNewBook(id, name, year, count, rate, publisherName);
+            authorService.addNewBook(id, newBook);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e){
             throw new Exception(e.getMessage());
         }
     }
 
-    @PatchMapping("{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<String> updateAuthor(
             @PathVariable("id") int id,
             @RequestBody Author newAuthor
@@ -88,7 +85,7 @@ public class AuthorController {
         }
     }
 
-    @DeleteMapping(path="{id}")
+    @DeleteMapping(path="/{id}")
     public ResponseEntity<String> deleteAuthor(@PathVariable int id) throws Exception {
         try {
             authorService.deleteById(id);

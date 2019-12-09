@@ -13,7 +13,7 @@ import java.net.URI;
 
 @CrossOrigin
 @RestController
-@RequestMapping(path = "/publishers")
+@RequestMapping(path = "/api/publishers")
 public class PublisherController {
     private PublisherService publisherService;
 
@@ -22,7 +22,7 @@ public class PublisherController {
         this.publisherService = publisherService;
     }
 
-    @GetMapping()
+    @GetMapping
     public  DataPagination<Publisher> getAllPublishers(
             @RequestParam int pageNumber,
             @RequestParam int rowPerPage) {
@@ -34,14 +34,14 @@ public class PublisherController {
             @RequestBody Publisher newPublisher
     ) throws Exception {
         try{
-            Publisher publisher = publisherService.save(newPublisher);
+            Publisher publisher = publisherService.savePublisher(newPublisher);
             return ResponseEntity.created(new URI("publisher/" + publisher.getId())).body(publisher);
         } catch (Exception e){
             throw new Exception(e.getMessage());
         }
     }
 
-    @PatchMapping("{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<String> updatePublisher(
             @PathVariable("id") int id,
             @RequestBody Publisher newPublisher
@@ -54,7 +54,7 @@ public class PublisherController {
         }
     }
 
-    @DeleteMapping(path = "{id}")
+    @DeleteMapping(path = "/{id}")
     public ResponseEntity<String> deletePublisher(@PathVariable int id) throws Exception{
         try {
             publisherService.deleteById(id);
@@ -64,7 +64,7 @@ public class PublisherController {
         }
     }
 
-    @GetMapping(path="{id}")
+    @GetMapping(path="/{id}")
     public Publisher getPublisher(@PathVariable int id) throws Exception {
         try{
             return publisherService.findById(id);
@@ -73,8 +73,8 @@ public class PublisherController {
         }
     }
 
-    @GetMapping(path="{id}/books")
-    public Iterable<Book> getAllPublishersBooks(
+    @GetMapping(path="/{id}/books")
+    public DataPagination<Book> getAllPublishersBooks(
             @PathVariable("id") int id,
             @RequestParam int pageNumber,
             @RequestParam int rowPerPage) throws Exception {

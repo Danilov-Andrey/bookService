@@ -1,7 +1,8 @@
 package com.nc.bookservice.controllers;
 
 import com.nc.bookservice.dto.DataPagination;
-import com.nc.bookservice.models.BookUpdate;
+import com.nc.bookservice.models.SaveBook;
+import com.nc.bookservice.models.UpdateBook;
 import com.nc.bookservice.entities.Book;
 import com.nc.bookservice.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import java.net.URI;
 
 @CrossOrigin
 @RestController
-@RequestMapping(path="/books")
+@RequestMapping(path="/api/books")
 public class BookController {
     private BookService bookService;
 
@@ -29,7 +30,7 @@ public class BookController {
         return bookService.findAll(pageNumber,rowPerPage);
     }
 
-    @GetMapping(path="{id}")
+    @GetMapping(path="/{id}")
     public Book getBook(@PathVariable int id) throws Exception {
         try{
             return bookService.findById(id);
@@ -38,7 +39,7 @@ public class BookController {
         }
     }
 
-    @DeleteMapping(path="{id}")
+    @DeleteMapping(path="/{id}")
     public ResponseEntity<Void> deleteBook(@PathVariable int id) throws Exception {
         try {
             bookService.deleteById(id);
@@ -48,10 +49,10 @@ public class BookController {
         }
     }
 
-    @PatchMapping("{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<String> updateBook(
             @PathVariable("id") int id,
-            @RequestBody BookUpdate book
+            @RequestBody UpdateBook book
     ) throws Exception {
         try{
             bookService.updateBook(id, book);
@@ -63,16 +64,10 @@ public class BookController {
 
     @PostMapping
     public ResponseEntity<Book> addBook (
-            @RequestParam int year,
-            @RequestParam String name,
-            @RequestParam String authorFirstName,
-            @RequestParam String authorLastName,
-            @RequestParam String publisherName,
-            @RequestParam int rate,
-            @RequestParam int count
-    ) throws Exception {
+            @RequestBody SaveBook newBook
+            ) throws Exception {
         try {
-            Book book = bookService.save(authorFirstName ,authorLastName, publisherName, year, name, rate, count);
+            Book book = bookService.saveBook(newBook);
             return ResponseEntity.created(new URI("book/" + book.getId()))
                     .body(book);
         } catch (Exception e){

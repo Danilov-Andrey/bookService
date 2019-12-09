@@ -3,6 +3,7 @@ package com.nc.bookservice.services;
 import com.nc.bookservice.dto.DataPagination;
 import com.nc.bookservice.entities.Copies;
 import com.nc.bookservice.entities.Publisher;
+import com.nc.bookservice.models.SaveBook;
 import com.nc.bookservice.repos.AuthorRepo;
 import com.nc.bookservice.entities.Author;
 import com.nc.bookservice.entities.Book;
@@ -16,9 +17,7 @@ import java.util.List;
 @Service
 public class AuthorService {
     private AuthorRepo authorRepo;
-
     private PublisherService publisherService;
-
     private BookService bookService;
 
     @Autowired
@@ -44,11 +43,11 @@ public class AuthorService {
         return dataPagination;
     }
 
-    public List<Book> findAuthorsBooks(int id, int pageNumber, int rowPerPage) throws Exception {
-        return bookService.authorsBooks(id, pageNumber, rowPerPage);
+    public DataPagination<Book> findAuthorsBooks(int id, int pageNumber, int rowPerPage) throws Exception {
+        return bookService.getAuthorsBooks(id, pageNumber, rowPerPage);
     }
 
-    public Author save(Author newAuthor) {
+    public Author saveAuthor(Author newAuthor) {
          return authorRepo.save(newAuthor);
     }
 
@@ -66,14 +65,14 @@ public class AuthorService {
         authorRepo.deleteById(id);
     }
 
-    public void addNewBook(int id, String name, int year, int count, int rate, String publisherName) throws Exception {
+    public void addNewBook(int id, SaveBook newBook) throws Exception {
         Author author = findById(id);
-        Publisher publisher = publisherService.findByName(publisherName);
-        Copies copies = new Copies(count, rate);
+        Publisher publisher = publisherService.findByName(newBook.getPublisherName());
+        Copies copies = new Copies(newBook.getCount(), newBook.getRate());
         if (publisher == null){
-            publisher = new Publisher(publisherName);
+            publisher = new Publisher(newBook.getPublisherName());
         }
-        Book book = new Book(author, publisher, name, year, copies);
-        bookService.save(book);
+        Book book = new Book(author, publisher, newBook.getName(), newBook.getYear(), copies);
+        bookService.saveBook(book);
     }
 }

@@ -1,6 +1,6 @@
 package com.nc.bookservice.models;
 
-public class BookUpdate {
+public class UpdateBook {
     private String name;
     private int year;
 

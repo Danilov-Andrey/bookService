@@ -1,14 +1,15 @@
 package com.nc.bookservice.controllers;
 
-import com.nc.bookservice.entities.user.Message;
 import com.nc.bookservice.entities.user.User;
 import com.nc.bookservice.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @CrossOrigin
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class AuthController {
     private AuthService authService;
 
@@ -17,9 +18,9 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @GetMapping("/validateLogin")
-    public Message validateLogin() {
-        return new Message("User successfully authenticated");
+    @GetMapping("/validateUser")
+    public Principal validateUser(Principal user) {
+        return user;
     }
 
     @PostMapping

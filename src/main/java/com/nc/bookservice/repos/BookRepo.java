@@ -11,5 +11,9 @@ public interface BookRepo extends PagingAndSortingRepository<Book, Integer>,
         JpaSpecificationExecutor<Book> {
     List<Book> findByAuthor_Id(int author_id, Pageable pageable);
 
+    List<Book> findByAuthor_Id(int author_id);
+
     List<Book> findByPublisher_Id(int publisher_id, Pageable pageable);
+
+    List<Book> findByPublisher_Id(int publisher_id);
 }
