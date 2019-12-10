@@ -20,24 +20,38 @@ public class CopiesController {
     }
 
     @GetMapping
-    public DataPagination<Copies> getAllCopies(
+    public ResponseEntity<?> getAllCopies(
             @RequestParam int pageNumber,
             @RequestParam int rowPerPage)
     {
-        return copiesService.findAll(pageNumber, rowPerPage);
+        try {
+            DataPagination<Copies> copies = copiesService.findAll(pageNumber, rowPerPage);
+            return new ResponseEntity<>(copies, HttpStatus.OK);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping(path = "/{id}")
-    public Copies getCopies(@PathVariable int id) {
-            return copiesService.findById(id);
+    public ResponseEntity<?> getCopies(@PathVariable int id) {
+        try {
+            Copies copies = copiesService.findById(id);
+            return new ResponseEntity<>(copies, HttpStatus.OK);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Copies> updateCopies(
+    public ResponseEntity<?> updateCopies(
             @PathVariable("id") int id,
             @RequestBody Copies newCopies
     ){
+        try {
             Copies copies = copiesService.updateCopies(id, newCopies);
             return new ResponseEntity<>(copies, HttpStatus.OK);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 }

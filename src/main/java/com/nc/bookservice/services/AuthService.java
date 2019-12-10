@@ -2,6 +2,7 @@ package com.nc.bookservice.services;
 
 import com.nc.bookservice.entities.user.Role;
 import com.nc.bookservice.entities.user.User;
+import com.nc.bookservice.exceptions.user.UserExistsException;
 import com.nc.bookservice.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,9 @@ public class AuthService {
     }
 
     public User createUser(User user) {
+        if (userRepo.findByUsername(user.getUsername()) != null){
+            throw new UserExistsException("This username exists");
+        }
         User newUser = new User();
         newUser.setPassword(user.getPassword());
         newUser.setUsername(user.getUsername());

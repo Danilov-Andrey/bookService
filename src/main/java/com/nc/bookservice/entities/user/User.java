@@ -8,12 +8,11 @@ import java.util.Set;
 public class User {
     private String password;
 
+    private String username;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-
-    @Column(name = "username", unique = true)
-    private String username;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))

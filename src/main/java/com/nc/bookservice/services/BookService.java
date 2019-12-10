@@ -4,9 +4,9 @@ import com.nc.bookservice.dto.DataPagination;
 import com.nc.bookservice.entities.Book;
 import com.nc.bookservice.entities.Copies;
 import com.nc.bookservice.entities.Publisher;
-import com.nc.bookservice.exceptions.AuthorBooksAreNotFoundException;
-import com.nc.bookservice.exceptions.BookIsNotFoundException;
-import com.nc.bookservice.exceptions.PublisherBooksAreNotFoundException;
+import com.nc.bookservice.exceptions.authors.AuthorBooksNotFoundException;
+import com.nc.bookservice.exceptions.books.BookNotFoundException;
+import com.nc.bookservice.exceptions.publisher.PublisherBooksNotFoundException;
 import com.nc.bookservice.models.SaveBook;
 import com.nc.bookservice.models.UpdateBook;
 import com.nc.bookservice.entities.Author;
@@ -33,14 +33,17 @@ public class BookService {
     public Book findById(int id) {
         Book book = bookRepo.findById(id).orElse(null);
         if (book == null){
-            throw new BookIsNotFoundException("Cannot find book with id: " + id);
+            throw new BookNotFoundException("Cannot find book with id: " + id);
         }
         return book;
     }
 
-    public DataPagination<Book> findAll(int pageNumber, int rowPerPage){
+    public DataPagination<Book> findAllBooks(int pageNumber, int rowPerPage){
         List<Book> books = new ArrayList<>();
         bookRepo.findAll(PageRequest.of(pageNumber - 1, rowPerPage)).forEach(books::add);
+        if (books.size() == 0){
+            throw new BookNotFoundException("There are no any books");
+        }
         int totalPage = (int) Math.ceil((float)bookRepo.count()/rowPerPage);
         DataPagination<Book> dataPagination = new DataPagination(totalPage, pageNumber, books);
         return dataPagination;
@@ -64,7 +67,7 @@ public class BookService {
     public Book updateBook(int id, UpdateBook book) {
         Book updatedBook = findById(id);
         if (updatedBook == null) {
-            throw new BookIsNotFoundException("Cannot find book with id: " + id);
+            throw new BookNotFoundException("Cannot find book with id: " + id);
         }
         updatedBook.setName(book.getName());
         updatedBook.setYear(book.getYear());
@@ -73,7 +76,7 @@ public class BookService {
 
     public void deleteById(int id) {
         if (!bookRepo.existsById(id)) {
-            throw new BookIsNotFoundException("Cannot find book with id: " + id);
+            throw new BookNotFoundException("Cannot find book with id: " + id);
         }
         bookRepo.deleteById(id);
     }
@@ -81,21 +84,21 @@ public class BookService {
     public DataPagination<Book> getAuthorsBooks(int id, int pageNumber, int rowPerPage) {
         List<Book> books = bookRepo.findByAuthor_Id(id, PageRequest.of(pageNumber - 1, rowPerPage));
         List<Book> allBooks = bookRepo.findByAuthor_Id(id);
-        int totalPage = (int) Math.ceil((float)allBooks.size()/rowPerPage);
         if (books.size() == 0){
-            throw new AuthorBooksAreNotFoundException("Cannot find any books of this author");
+            throw new AuthorBooksNotFoundException("Cannot find any books of this author");
         }
+        int totalPage = (int) Math.ceil((float)allBooks.size()/rowPerPage);
         DataPagination<Book> dataPagination = new DataPagination<>(totalPage, pageNumber, books);
         return dataPagination;
     }
 
     public DataPagination<Book> getPublishersBooks(int id, int pageNumber, int rowPerPage) {
         List<Book> books = bookRepo.findByPublisher_Id(id, PageRequest.of(pageNumber - 1, rowPerPage));
+        if (books.size() == 0){
+            throw new PublisherBooksNotFoundException("Cannot find any books of this publisher");
+        }
         List<Book> allBooks = bookRepo.findByPublisher_Id(id);
         int totalPage = (int) Math.ceil((float)allBooks.size()/rowPerPage);
-        if (books.size() == 0){
-            throw new PublisherBooksAreNotFoundException("Cannot find any books of this publisher");
-        }
         DataPagination<Book> dataPagination = new DataPagination<>(totalPage, pageNumber, books);
         return dataPagination;
     }

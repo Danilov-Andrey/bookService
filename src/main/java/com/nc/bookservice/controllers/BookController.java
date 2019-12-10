@@ -22,37 +22,55 @@ public class BookController {
     }
 
     @GetMapping
-    public DataPagination<Book> getAllBooks(
+    public ResponseEntity<?> getAllBooks(
             @RequestParam int pageNumber,
             @RequestParam int rowPerPage) {
-        return bookService.findAll(pageNumber,rowPerPage);
+        try{
+            DataPagination<Book> books = bookService.findAllBooks(pageNumber,rowPerPage);
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping(path="/{id}")
-    public Book getBook(@PathVariable int id) {
-            return bookService.findById(id);
+    public ResponseEntity<?> getBook(@PathVariable int id) {
+            try{
+                Book book = bookService.findById(id);
+                return new ResponseEntity<>(book, HttpStatus.OK);
+            } catch (RuntimeException e){
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            }
     }
 
     @DeleteMapping(path="/{id}")
-    public ResponseEntity<Void> deleteBook(@PathVariable int id) {
+    public ResponseEntity<?> deleteBook(@PathVariable int id) {
+        try {
             bookService.deleteById(id);
             return new ResponseEntity<>(HttpStatus.OK);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Book> updateBook(
+    public ResponseEntity<?> updateBook(
             @PathVariable("id") int id,
             @RequestBody UpdateBook updateBook
     ) {
+        try {
             Book book = bookService.updateBook(id, updateBook);
             return new ResponseEntity<>(book, HttpStatus.OK);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping
-    public ResponseEntity<Book> addBook (
+    public ResponseEntity<?> addBook (
             @RequestBody SaveBook newBook
     ) {
             Book book = bookService.saveBook(newBook);
-            return new ResponseEntity<>(book, HttpStatus.OK);
+            return new ResponseEntity<>(book, HttpStatus.CREATED);
     }
 }

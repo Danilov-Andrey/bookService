@@ -3,7 +3,8 @@ package com.nc.bookservice.services;
 import com.nc.bookservice.dto.DataPagination;
 import com.nc.bookservice.entities.Book;
 import com.nc.bookservice.entities.Publisher;
-import com.nc.bookservice.exceptions.PublisherIsNotFoundException;
+import com.nc.bookservice.exceptions.publisher.PublisherExistsException;
+import com.nc.bookservice.exceptions.publisher.PublisherNotFoundException;
 import com.nc.bookservice.repos.PublisherRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -29,20 +30,26 @@ public class PublisherService {
     public Publisher findById(int id) {
         Publisher publisher = publisherRepo.findById(id).orElse(null);
         if (publisher == null){
-            throw new PublisherIsNotFoundException("Cannot find publisher with id " + id);
+            throw new PublisherNotFoundException("Cannot find publisher with id " + id);
         }
         return publisher;
     }
 
     public DataPagination<Publisher> findAll(int pageNumber, int rowPerPage){
         List<Publisher> publishers = new ArrayList<>();
-        int totalPage = (int) Math.ceil((float)publisherRepo.count()/rowPerPage);
         publisherRepo.findAll(PageRequest.of(pageNumber - 1, rowPerPage)).forEach(publishers::add);
+        if(publishers.size() == 0) {
+            throw new PublisherNotFoundException("Cannot find any publishers");
+        }
+        int totalPage = (int) Math.ceil((float)publisherRepo.count()/rowPerPage);
         DataPagination<Publisher> dataPagination = new DataPagination(totalPage, pageNumber, publishers);
         return dataPagination;
     }
 
     public Publisher savePublisher(Publisher newPublisher) {
+        if (findByName(newPublisher.getName()) != null){
+            throw new PublisherExistsException("This publisher exists");
+        }
         return publisherRepo.save(newPublisher);
     }
 
@@ -54,7 +61,7 @@ public class PublisherService {
 
     public void deleteById(int id) {
         if(!publisherRepo.existsById(id)) {
-            throw new PublisherIsNotFoundException("Cannot find publisher with id " + id);
+            throw new PublisherNotFoundException("Cannot find publisher with id " + id);
         }
         publisherRepo.deleteById(id);
     }

@@ -24,23 +24,38 @@ public class AuthorController {
     }
 
     @GetMapping
-    public DataPagination<Author> getAllAuthors(
+    public ResponseEntity<?> getAllAuthors(
             @RequestParam int pageNumber,
             @RequestParam int rowPerPage) {
-        return authorService.findAll(pageNumber,rowPerPage);
+        try {
+            DataPagination<Author> authors = authorService.findAllAuthors(pageNumber,rowPerPage);
+            return new ResponseEntity<>(authors, HttpStatus.OK);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping(path = "/{id}/books")
-    public DataPagination<Book> getAuthorsBooks(
+    public ResponseEntity<?> getAuthorsBooks(
             @PathVariable("id") int id,
             @RequestParam int pageNumber,
             @RequestParam int rowPerPage) {
-        return authorService.findAuthorsBooks(id, pageNumber, rowPerPage);
+        try {
+            DataPagination<Book> books = authorService.findAuthorsBooks(id, pageNumber, rowPerPage);
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping(path="/{id}")
-    public Author getAuthor(@PathVariable int id) {
-           return authorService.findById(id);
+    public ResponseEntity<?> getAuthor(@PathVariable int id) {
+        try{
+            Author author = authorService.findById(id);
+            return new ResponseEntity<>(author, HttpStatus.OK);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping
@@ -48,30 +63,42 @@ public class AuthorController {
             @RequestBody Author newAuthor
     ) {
            Author author = authorService.saveAuthor(newAuthor);
-           return new ResponseEntity<>(author, HttpStatus.OK);
+           return new ResponseEntity<>(author, HttpStatus.CREATED);
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<Book> addAuthorsBook(
+    public ResponseEntity<?> addAuthorsBook(
             @PathVariable("id") int id,
             @RequestBody SaveBook newBook
             ){
+        try {
             Book book = authorService.addNewBook(id, newBook);
-            return new ResponseEntity<>(book, HttpStatus.OK);
+            return new ResponseEntity<>(book, HttpStatus.CREATED);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Author> updateAuthor(
+    public ResponseEntity<?> updateAuthor(
             @PathVariable("id") int id,
             @RequestBody Author newAuthor
     ) {
+        try {
             Author author = authorService.updateAuthor(id, newAuthor);
             return new ResponseEntity<>(author, HttpStatus.OK);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping(path="/{id}")
-    public ResponseEntity<String> deleteAuthor(@PathVariable int id) {
+    public ResponseEntity<?> deleteAuthor(@PathVariable int id) {
+        try {
             authorService.deleteById(id);
             return new ResponseEntity<>(HttpStatus.OK);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 }

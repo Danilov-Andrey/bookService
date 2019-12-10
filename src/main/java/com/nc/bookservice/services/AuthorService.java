@@ -3,7 +3,7 @@ package com.nc.bookservice.services;
 import com.nc.bookservice.dto.DataPagination;
 import com.nc.bookservice.entities.Copies;
 import com.nc.bookservice.entities.Publisher;
-import com.nc.bookservice.exceptions.AuthorIsNotFoundException;
+import com.nc.bookservice.exceptions.authors.AuthorNotFoundException;
 import com.nc.bookservice.models.SaveBook;
 import com.nc.bookservice.repos.AuthorRepo;
 import com.nc.bookservice.entities.Author;
@@ -31,15 +31,18 @@ public class AuthorService {
     public Author findById(int id) {
         Author author = authorRepo.findById(id).orElse(null);
         if (author == null) {
-            throw new AuthorIsNotFoundException("Cannot find author with id: " + id);
+            throw new AuthorNotFoundException("Cannot find author with id: " + id);
         }
         return author;
     }
 
-    public DataPagination<Author> findAll(int pageNumber, int rowPerPage) {
+    public DataPagination<Author> findAllAuthors(int pageNumber, int rowPerPage) {
         List<Author> authors = new ArrayList<>();
-        int totalPage = (int) Math.ceil((float)authorRepo.count()/rowPerPage);
         authorRepo.findAll(PageRequest.of(pageNumber - 1, rowPerPage)).forEach(authors::add);
+        if (authors.size() == 0){
+            throw new AuthorNotFoundException("There are no any authors");
+        }
+        int totalPage = (int) Math.ceil((float)authorRepo.count()/rowPerPage);
         DataPagination<Author> dataPagination = new DataPagination(totalPage, pageNumber, authors);
         return dataPagination;
     }
@@ -61,7 +64,7 @@ public class AuthorService {
 
     public void deleteById(int id) {
         if (!authorRepo.existsById(id)) {
-            throw new AuthorIsNotFoundException("Cannot find author with id: " + id);
+            throw new AuthorNotFoundException("Cannot find author with id: " + id);
         }
         authorRepo.deleteById(id);
     }

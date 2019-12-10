@@ -21,47 +21,76 @@ public class PublisherController {
     }
 
     @GetMapping
-    public  DataPagination<Publisher> getAllPublishers(
+    public  ResponseEntity<?> getAllPublishers(
             @RequestParam int pageNumber,
             @RequestParam int rowPerPage)
     {
-            return publisherService.findAll(pageNumber, rowPerPage);
+        try{
+            DataPagination<Publisher> publishers = publisherService.findAll(pageNumber, rowPerPage);
+            return new ResponseEntity<>(publishers, HttpStatus.OK);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping
-    public  ResponseEntity<Publisher> addNewPublisher(
+    public  ResponseEntity<?> addNewPublisher(
             @RequestBody Publisher newPublisher
     ) {
+        try {
             Publisher publisher = publisherService.savePublisher(newPublisher);
-            return new ResponseEntity<>(publisher, HttpStatus.OK);
+            return new ResponseEntity<>(publisher, HttpStatus.CREATED);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Publisher> updatePublisher(
+    public ResponseEntity<?> updatePublisher(
             @PathVariable("id") int id,
             @RequestBody Publisher newPublisher
     ) {
+        try {
             Publisher publisher =  publisherService.updatePublisher(id, newPublisher);
             return new ResponseEntity<>(publisher, HttpStatus.OK);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<String> deletePublisher(@PathVariable int id) {
+    public ResponseEntity<?> deletePublisher(@PathVariable int id) {
+        try{
             publisherService.deleteById(id);
             return new ResponseEntity<>(HttpStatus.OK);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+
     }
 
     @GetMapping(path="/{id}")
-    public Publisher getPublisher(@PathVariable int id) {
-            return publisherService.findById(id);
+    public ResponseEntity<?> getPublisher(@PathVariable int id) {
+        try {
+            Publisher publisher = publisherService.findById(id);
+            return new ResponseEntity<>(publisher, HttpStatus.OK);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping(path="/{id}/books")
-    public DataPagination<Book> getAllPublishersBooks(
+    public ResponseEntity<?> getAllPublishersBooks(
             @PathVariable("id") int id,
             @RequestParam int pageNumber,
             @RequestParam int rowPerPage)
     {
-            return publisherService.findPublishersBooks(id, pageNumber, rowPerPage);
+        try {
+            DataPagination<Book> books = publisherService.findPublishersBooks(id, pageNumber, rowPerPage);
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 }
