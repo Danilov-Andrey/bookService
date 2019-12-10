@@ -2,6 +2,7 @@ package com.nc.bookservice.services;
 
 import com.nc.bookservice.dto.DataPagination;
 import com.nc.bookservice.entities.Copies;
+import com.nc.bookservice.exceptions.CopiesAreNotFoundException;
 import com.nc.bookservice.repos.CopiesRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -19,10 +20,10 @@ public class CopiesService {
         this.copiesRepo = copiesRepo;
     }
 
-    public Copies findById(int id) throws Exception{
+    public Copies findById(int id) {
         Copies copies = copiesRepo.findById(id).orElse(null);
         if (copies == null){
-            throw new Exception("Cannot find copies with id: " + id);
+            throw new CopiesAreNotFoundException("Cannot find copies with id: " + id);
         }
         return copies;
     }
@@ -35,10 +36,10 @@ public class CopiesService {
         return dataPagination;
     }
 
-    public void updateCopies(int id, Copies copies) throws Exception {
+    public Copies updateCopies(int id, Copies copies) {
         Copies updatedCopies = findById(id);
         updatedCopies.setCount(copies.getCount());
         updatedCopies.setRate(copies.getRate());
-        copiesRepo.save(updatedCopies);
+        return copiesRepo.save(updatedCopies);
     }
 }

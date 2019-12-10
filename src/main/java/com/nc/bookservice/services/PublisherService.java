@@ -3,6 +3,7 @@ package com.nc.bookservice.services;
 import com.nc.bookservice.dto.DataPagination;
 import com.nc.bookservice.entities.Book;
 import com.nc.bookservice.entities.Publisher;
+import com.nc.bookservice.exceptions.PublisherIsNotFoundException;
 import com.nc.bookservice.repos.PublisherRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -25,10 +26,10 @@ public class PublisherService {
         this.publisherRepo = publisherRepo;
     }
 
-    public Publisher findById(int id) throws Exception {
+    public Publisher findById(int id) {
         Publisher publisher = publisherRepo.findById(id).orElse(null);
         if (publisher == null){
-            throw new Exception("Cannot find publisher with id " + id);
+            throw new PublisherIsNotFoundException("Cannot find publisher with id " + id);
         }
         return publisher;
     }
@@ -45,20 +46,20 @@ public class PublisherService {
         return publisherRepo.save(newPublisher);
     }
 
-    public void updatePublisher(int id, Publisher publisher) throws Exception{
+    public Publisher updatePublisher(int id, Publisher publisher) {
         Publisher updatedPublisher = findById(id);
         updatedPublisher.setName(publisher.getName());
-        publisherRepo.save(updatedPublisher);
+        return publisherRepo.save(updatedPublisher);
     }
 
-    public void deleteById(int id) throws Exception{
+    public void deleteById(int id) {
         if(!publisherRepo.existsById(id)) {
-            throw new Exception("Cannot find publisher with id " + id);
+            throw new PublisherIsNotFoundException("Cannot find publisher with id " + id);
         }
         publisherRepo.deleteById(id);
     }
 
-    public DataPagination<Book> findPublishersBooks(int id, int pageNumber, int rowPerPage) throws Exception {
+    public DataPagination<Book> findPublishersBooks(int id, int pageNumber, int rowPerPage) {
         return bookService.getPublishersBooks(id, pageNumber, rowPerPage);
     }
 

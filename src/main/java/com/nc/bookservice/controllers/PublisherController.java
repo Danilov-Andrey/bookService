@@ -9,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-
 @CrossOrigin
 @RestController
 @RequestMapping(path = "/api/publishers")
@@ -25,59 +23,45 @@ public class PublisherController {
     @GetMapping
     public  DataPagination<Publisher> getAllPublishers(
             @RequestParam int pageNumber,
-            @RequestParam int rowPerPage) {
-        return publisherService.findAll(pageNumber, rowPerPage);
+            @RequestParam int rowPerPage)
+    {
+            return publisherService.findAll(pageNumber, rowPerPage);
     }
 
     @PostMapping
     public  ResponseEntity<Publisher> addNewPublisher(
             @RequestBody Publisher newPublisher
-    ) throws Exception {
-        try{
+    ) {
             Publisher publisher = publisherService.savePublisher(newPublisher);
-            return ResponseEntity.created(new URI("publisher/" + publisher.getId())).body(publisher);
-        } catch (Exception e){
-            throw new Exception(e.getMessage());
-        }
+            return new ResponseEntity<>(publisher, HttpStatus.OK);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<String> updatePublisher(
+    @PutMapping("/{id}")
+    public ResponseEntity<Publisher> updatePublisher(
             @PathVariable("id") int id,
             @RequestBody Publisher newPublisher
-    ) throws Exception {
-        try{
-            publisherService.updatePublisher(id, newPublisher);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e){
-            throw new Exception(e.getMessage());
-        }
+    ) {
+            Publisher publisher =  publisherService.updatePublisher(id, newPublisher);
+            return new ResponseEntity<>(publisher, HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<String> deletePublisher(@PathVariable int id) throws Exception{
-        try {
+    public ResponseEntity<String> deletePublisher(@PathVariable int id) {
             publisherService.deleteById(id);
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e){
-            throw new Exception(e.getMessage());
-        }
     }
 
     @GetMapping(path="/{id}")
-    public Publisher getPublisher(@PathVariable int id) throws Exception {
-        try{
+    public Publisher getPublisher(@PathVariable int id) {
             return publisherService.findById(id);
-        } catch (Exception e){
-            throw new Exception(e.getMessage());
-        }
     }
 
     @GetMapping(path="/{id}/books")
     public DataPagination<Book> getAllPublishersBooks(
             @PathVariable("id") int id,
             @RequestParam int pageNumber,
-            @RequestParam int rowPerPage) throws Exception {
-        return publisherService.findPublishersBooks(id, pageNumber, rowPerPage);
+            @RequestParam int rowPerPage)
+    {
+            return publisherService.findPublishersBooks(id, pageNumber, rowPerPage);
     }
 }

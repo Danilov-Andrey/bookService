@@ -28,24 +28,16 @@ public class CopiesController {
     }
 
     @GetMapping(path = "/{id}")
-    public Copies getCopies(@PathVariable int id) throws Exception{
-        try {
+    public Copies getCopies(@PathVariable int id) {
             return copiesService.findById(id);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<String> updateCopies(
+    @PutMapping("/{id}")
+    public ResponseEntity<Copies> updateCopies(
             @PathVariable("id") int id,
-            @RequestBody Copies copies
-    ) throws Exception {
-        try{
-            copiesService.updateCopies(id, copies);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e){
-            throw new Exception(e.getMessage());
-        }
+            @RequestBody Copies newCopies
+    ){
+            Copies copies = copiesService.updateCopies(id, newCopies);
+            return new ResponseEntity<>(copies, HttpStatus.OK);
     }
 }

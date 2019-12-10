@@ -10,8 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-
 @CrossOrigin
 @RestController
 @RequestMapping(path="/api/books")
@@ -31,47 +29,30 @@ public class BookController {
     }
 
     @GetMapping(path="/{id}")
-    public Book getBook(@PathVariable int id) throws Exception {
-        try{
+    public Book getBook(@PathVariable int id) {
             return bookService.findById(id);
-        } catch (Exception e){
-            throw new Exception(e.getMessage());
-        }
     }
 
     @DeleteMapping(path="/{id}")
-    public ResponseEntity<Void> deleteBook(@PathVariable int id) throws Exception {
-        try {
+    public ResponseEntity<Void> deleteBook(@PathVariable int id) {
             bookService.deleteById(id);
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e){
-            throw new Exception(e.getMessage());
-        }
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateBook(
+    public ResponseEntity<Book> updateBook(
             @PathVariable("id") int id,
-            @RequestBody UpdateBook book
-    ) throws Exception {
-        try{
-            bookService.updateBook(id, book);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e){
-            throw new Exception(e.getMessage());
-        }
+            @RequestBody UpdateBook updateBook
+    ) {
+            Book book = bookService.updateBook(id, updateBook);
+            return new ResponseEntity<>(book, HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<Book> addBook (
             @RequestBody SaveBook newBook
-            ) throws Exception {
-        try {
+    ) {
             Book book = bookService.saveBook(newBook);
-            return ResponseEntity.created(new URI("book/" + book.getId()))
-                    .body(book);
-        } catch (Exception e){
-            throw new Exception(e.getMessage());
-        }
+            return new ResponseEntity<>(book, HttpStatus.OK);
     }
 }

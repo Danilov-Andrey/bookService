@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 @CrossOrigin
 @RestController
@@ -38,60 +39,39 @@ public class AuthorController {
     }
 
     @GetMapping(path="/{id}")
-    public Author getAuthor(@PathVariable int id) throws Exception {
-        try{
-            return authorService.findById(id);
-        } catch (Exception e){
-            throw new Exception(e.getMessage());
-        }
+    public Author getAuthor(@PathVariable int id) {
+           return authorService.findById(id);
     }
 
     @PostMapping
     public ResponseEntity<Author> createAuthor (
             @RequestBody Author newAuthor
-    ) throws Exception {
-        try {
-            Author author = authorService.saveAuthor(newAuthor);
-            return ResponseEntity.created(new URI("/api/authors/" + author.getId()))
-                    .body(author);
-        } catch (Exception e){
-            throw new Exception(e.getMessage());
-        }
+    ) {
+       Author author = authorService.saveAuthor(newAuthor);
+       return new ResponseEntity<>(author, HttpStatus.OK);
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<String> addAuthorsBook(
+    public ResponseEntity<Book> addAuthorsBook(
             @PathVariable("id") int id,
             @RequestBody SaveBook newBook
-            ) throws Exception {
-        try{
-            authorService.addNewBook(id, newBook);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e){
-            throw new Exception(e.getMessage());
-        }
+            ){
+            Book book = authorService.addNewBook(id, newBook);
+            return new ResponseEntity<>(book, HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateAuthor(
+    public ResponseEntity<Author> updateAuthor(
             @PathVariable("id") int id,
             @RequestBody Author newAuthor
-    ) throws Exception {
-        try{
-            authorService.updateAuthor(id, newAuthor);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e){
-            throw new Exception(e.getMessage());
-        }
+    ) {
+            Author author = authorService.updateAuthor(id, newAuthor);
+            return new ResponseEntity<>(author, HttpStatus.OK);
     }
 
     @DeleteMapping(path="/{id}")
-    public ResponseEntity<String> deleteAuthor(@PathVariable int id) throws Exception {
-        try {
+    public ResponseEntity<String> deleteAuthor(@PathVariable int id) {
             authorService.deleteById(id);
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e){
-            throw new Exception(e.getMessage());
-        }
     }
 }

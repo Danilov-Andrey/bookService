@@ -17,12 +17,12 @@ public class AuthService {
         this.userRepo = userRepo;
     }
 
-    public User createUser(User user){
+    public User createUser(User user) throws Exception {
         User newUser = new User();
         newUser.setPassword(user.getPassword());
         newUser.setUsername(user.getUsername());
         newUser.setRoles(Collections.singleton(Role.USER));
         userRepo.save(newUser);
-        return user;
+        return newUser;
     }
 }

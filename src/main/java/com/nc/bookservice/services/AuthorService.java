@@ -3,6 +3,7 @@ package com.nc.bookservice.services;
 import com.nc.bookservice.dto.DataPagination;
 import com.nc.bookservice.entities.Copies;
 import com.nc.bookservice.entities.Publisher;
+import com.nc.bookservice.exceptions.AuthorIsNotFoundException;
 import com.nc.bookservice.models.SaveBook;
 import com.nc.bookservice.repos.AuthorRepo;
 import com.nc.bookservice.entities.Author;
@@ -27,10 +28,10 @@ public class AuthorService {
      this.bookService = bookService;
     }
 
-    public Author findById(int id) throws Exception {
+    public Author findById(int id) {
         Author author = authorRepo.findById(id).orElse(null);
         if (author==null) {
-            throw new Exception("Cannot find author with id: " + id);
+            throw new AuthorIsNotFoundException("Cannot find author with id: " + id);
         }
         return author;
     }
@@ -51,21 +52,21 @@ public class AuthorService {
          return authorRepo.save(newAuthor);
     }
 
-    public void updateAuthor(int id, Author author) throws Exception {
+    public Author updateAuthor(int id, Author author) {
         Author updatedAuthor = findById(id);
         updatedAuthor.setFirstName(author.getFirstName());
         updatedAuthor.setLastName(author.getLastName());
-        authorRepo.save(updatedAuthor);
+        return authorRepo.save(updatedAuthor);
     }
 
-    public void deleteById(int id) throws Exception {
+    public void deleteById(int id) {
         if (!authorRepo.existsById(id)) {
-            throw new Exception("Cannot find author with id: " + id);
+            throw new AuthorIsNotFoundException("Cannot find author with id: " + id);
         }
         authorRepo.deleteById(id);
     }
 
-    public void addNewBook(int id, SaveBook newBook) throws Exception {
+    public Book addNewBook(int id, SaveBook newBook) {
         Author author = findById(id);
         Publisher publisher = publisherService.findByName(newBook.getPublisherName());
         Copies copies = new Copies(newBook.getCount(), newBook.getRate());
@@ -73,6 +74,6 @@ public class AuthorService {
             publisher = new Publisher(newBook.getPublisherName());
         }
         Book book = new Book(author, publisher, newBook.getName(), newBook.getYear(), copies);
-        bookService.saveBook(book);
+        return bookService.saveBook(book);
     }
 }

@@ -4,6 +4,9 @@ import com.nc.bookservice.dto.DataPagination;
 import com.nc.bookservice.entities.Book;
 import com.nc.bookservice.entities.Copies;
 import com.nc.bookservice.entities.Publisher;
+import com.nc.bookservice.exceptions.AuthorBooksAreNotFoundException;
+import com.nc.bookservice.exceptions.BookIsNotFoundException;
+import com.nc.bookservice.exceptions.PublisherBooksAreNotFoundException;
 import com.nc.bookservice.models.SaveBook;
 import com.nc.bookservice.models.UpdateBook;
 import com.nc.bookservice.entities.Author;
@@ -27,10 +30,10 @@ public class BookService {
         this.bookRepo = bookRepo;
     }
 
-    public Book findById(int id) throws Exception{
+    public Book findById(int id) {
         Book book = bookRepo.findById(id).orElse(null);
         if (book == null){
-            throw new Exception("Cannot find book with id: " + id);
+            throw new BookIsNotFoundException("Cannot find book with id: " + id);
         }
         return book;
     }
@@ -58,40 +61,40 @@ public class BookService {
         return bookRepo.save(book);
     }
 
-    public void updateBook(int id, UpdateBook book) throws Exception {
+    public Book updateBook(int id, UpdateBook book) {
         Book updatedBook = findById(id);
         if (updatedBook == null) {
-            throw new Exception("Cannot find book with id: " + id);
+            throw new BookIsNotFoundException("Cannot find book with id: " + id);
         }
         updatedBook.setName(book.getName());
         updatedBook.setYear(book.getYear());
-        bookRepo.save(updatedBook);
+        return bookRepo.save(updatedBook);
     }
 
-    public void deleteById(int id) throws Exception {
+    public void deleteById(int id) {
         if (!bookRepo.existsById(id)) {
-            throw new Exception("Cannot find book with id: " + id);
+            throw new BookIsNotFoundException("Cannot find book with id: " + id);
         }
         bookRepo.deleteById(id);
     }
 
-    public DataPagination<Book> getAuthorsBooks(int id, int pageNumber, int rowPerPage) throws Exception {
+    public DataPagination<Book> getAuthorsBooks(int id, int pageNumber, int rowPerPage) {
         List<Book> books = bookRepo.findByAuthor_Id(id, PageRequest.of(pageNumber - 1, rowPerPage));
         List<Book> allBooks = bookRepo.findByAuthor_Id(id);
         int totalPage = (int) Math.ceil((float)allBooks.size()/rowPerPage);
         if (books.size() == 0){
-            throw new Exception("Cannot find any books of this author");
+            throw new AuthorBooksAreNotFoundException("Cannot find any books of this author");
         }
         DataPagination<Book> dataPagination = new DataPagination<>(totalPage, pageNumber, books);
         return dataPagination;
     }
 
-    public DataPagination<Book> getPublishersBooks(int id, int pageNumber, int rowPerPage) throws Exception {
+    public DataPagination<Book> getPublishersBooks(int id, int pageNumber, int rowPerPage) {
         List<Book> books = bookRepo.findByPublisher_Id(id, PageRequest.of(pageNumber - 1, rowPerPage));
         List<Book> allBooks = bookRepo.findByPublisher_Id(id);
         int totalPage = (int) Math.ceil((float)allBooks.size()/rowPerPage);
         if (books.size() == 0){
-            throw new Exception("Cannot find any books of this publisher");
+            throw new PublisherBooksAreNotFoundException("Cannot find any books of this publisher");
         }
         DataPagination<Book> dataPagination = new DataPagination<>(totalPage, pageNumber, books);
         return dataPagination;
