@@ -24,7 +24,7 @@ public class AuthController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) throws Exception {
+    public User createUser(@RequestBody User user) {
        return authService.createUser(user);
     }
 }

@@ -17,7 +17,7 @@ public class AuthService {
         this.userRepo = userRepo;
     }
 
-    public User createUser(User user) throws Exception {
+    public User createUser(User user) {
         User newUser = new User();
         newUser.setPassword(user.getPassword());
         newUser.setUsername(user.getUsername());
