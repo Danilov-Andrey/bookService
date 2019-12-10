@@ -42,7 +42,7 @@ public class BookService {
         List<Book> books = new ArrayList<>();
         bookRepo.findAll(PageRequest.of(pageNumber - 1, rowPerPage)).forEach(books::add);
         int totalPage = (int) Math.ceil((float)bookRepo.count()/rowPerPage);
-        DataPagination dataPagination = new DataPagination(totalPage, pageNumber, books);
+        DataPagination<Book> dataPagination = new DataPagination(totalPage, pageNumber, books);
         return dataPagination;
     }
 

@@ -6,5 +6,4 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface AuthorRepo extends PagingAndSortingRepository<Author, Integer>,
         JpaSpecificationExecutor<Author> {
-
 }

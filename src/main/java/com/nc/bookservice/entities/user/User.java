@@ -6,6 +6,7 @@ import java.util.Set;
 @Entity
 @Table(name = "usr")
 public class User {
+    private String password;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -13,7 +14,6 @@ public class User {
 
     @Column(name = "username", unique = true)
     private String username;
-    private String password;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))

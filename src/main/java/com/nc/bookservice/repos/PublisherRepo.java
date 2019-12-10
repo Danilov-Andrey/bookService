@@ -7,6 +7,5 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface PublisherRepo extends PagingAndSortingRepository<Publisher, Integer>,
         JpaSpecificationExecutor<Publisher> {
-
      Publisher findByName(String name);
 }

@@ -38,7 +38,7 @@ public class PublisherService {
         List<Publisher> publishers = new ArrayList<>();
         int totalPage = (int) Math.ceil((float)publisherRepo.count()/rowPerPage);
         publisherRepo.findAll(PageRequest.of(pageNumber - 1, rowPerPage)).forEach(publishers::add);
-        DataPagination dataPagination = new DataPagination(totalPage, pageNumber, publishers);
+        DataPagination<Publisher> dataPagination = new DataPagination(totalPage, pageNumber, publishers);
         return dataPagination;
     }
 

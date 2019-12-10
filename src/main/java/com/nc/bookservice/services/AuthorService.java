@@ -30,7 +30,7 @@ public class AuthorService {
 
     public Author findById(int id) {
         Author author = authorRepo.findById(id).orElse(null);
-        if (author==null) {
+        if (author == null) {
             throw new AuthorIsNotFoundException("Cannot find author with id: " + id);
         }
         return author;
@@ -40,11 +40,11 @@ public class AuthorService {
         List<Author> authors = new ArrayList<>();
         int totalPage = (int) Math.ceil((float)authorRepo.count()/rowPerPage);
         authorRepo.findAll(PageRequest.of(pageNumber - 1, rowPerPage)).forEach(authors::add);
-        DataPagination dataPagination = new DataPagination(totalPage, pageNumber, authors);
+        DataPagination<Author> dataPagination = new DataPagination(totalPage, pageNumber, authors);
         return dataPagination;
     }
 
-    public DataPagination<Book> findAuthorsBooks(int id, int pageNumber, int rowPerPage) throws Exception {
+    public DataPagination<Book> findAuthorsBooks(int id, int pageNumber, int rowPerPage) {
         return bookService.getAuthorsBooks(id, pageNumber, rowPerPage);
     }
 

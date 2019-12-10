@@ -34,7 +34,7 @@ public class AuthorController {
     public DataPagination<Book> getAuthorsBooks(
             @PathVariable("id") int id,
             @RequestParam int pageNumber,
-            @RequestParam int rowPerPage) throws Exception {
+            @RequestParam int rowPerPage) {
         return authorService.findAuthorsBooks(id, pageNumber, rowPerPage);
     }
 
@@ -47,8 +47,8 @@ public class AuthorController {
     public ResponseEntity<Author> createAuthor (
             @RequestBody Author newAuthor
     ) {
-       Author author = authorService.saveAuthor(newAuthor);
-       return new ResponseEntity<>(author, HttpStatus.OK);
+           Author author = authorService.saveAuthor(newAuthor);
+           return new ResponseEntity<>(author, HttpStatus.OK);
     }
 
     @PostMapping("/{id}")

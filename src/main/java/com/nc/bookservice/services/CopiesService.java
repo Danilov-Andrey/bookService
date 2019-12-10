@@ -32,7 +32,7 @@ public class CopiesService {
         List<Copies> copies = new ArrayList<>();
         int totalPage = (int) Math.ceil((float)copiesRepo.count()/rowPerPage);
         copiesRepo.findAll(PageRequest.of(pageNumber - 1, rowPerPage)).forEach(copies::add);
-        DataPagination dataPagination = new DataPagination(totalPage, pageNumber, copies);
+        DataPagination<Copies> dataPagination = new DataPagination(totalPage, pageNumber, copies);
         return dataPagination;
     }
 

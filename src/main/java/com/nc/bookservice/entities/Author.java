@@ -6,6 +6,9 @@ import java.util.List;
 @Entity
 @Table(name = "author")
 public class Author {
+    private String firstName;
+    private String lastName;
+
     public Author(){}
 
     public Author(String firstName, String lastName) {
@@ -16,14 +19,9 @@ public class Author {
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<Book> books;
 
-    public void setBooks(List<Book> books) {
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    private String firstName;
-    private String lastName;
 
     public String getFirstName() {
         return firstName;
@@ -47,5 +45,8 @@ public class Author {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public void setBooks(List<Book> books) {
     }
 }

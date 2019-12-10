@@ -5,6 +5,8 @@ import java.util.List;
 
 @Entity
 public class Publisher {
+    private String name;
+
     public Publisher() {
     }
 
@@ -15,12 +17,9 @@ public class Publisher {
     @OneToMany(mappedBy = "publisher", cascade = CascadeType.ALL)
     private List<Book> books;
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-
-    private String name;
 
     public int getId() {
         return id;

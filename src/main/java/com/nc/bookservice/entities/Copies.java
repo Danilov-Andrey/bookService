@@ -4,6 +4,10 @@ import javax.persistence.*;
 
 @Entity
 public class Copies {
+    private int count;
+
+    private int rate;
+
     public Copies() {
     }
 
@@ -15,10 +19,6 @@ public class Copies {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-
-    private int count;
-    private int rate;
-
 
     @OneToOne(mappedBy = "copies")
     private Book book;

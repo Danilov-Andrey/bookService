@@ -2,8 +2,11 @@ package com.nc.bookservice.entities;
 
 import javax.persistence.*;
 
-@Entity // This tells Hibernate to make a table out of this class
+@Entity
 public class Book {
+    private String name;
+    private int year;
+
     public Book(){
     }
 
@@ -19,6 +22,18 @@ public class Book {
     @JoinColumn(name = "author_id", nullable = false)
     private Author author;
 
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn(name = "publisher_id", nullable = false)
+    private Publisher publisher;
+
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    private Integer id;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "copies_id" , nullable = false)
+    private Copies copies;
+
     public Author getAuthor() {
         return author;
     }
@@ -26,32 +41,6 @@ public class Book {
     public void setAuthor(Author author) {
         this.author = author;
     }
-
-
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "publisher_id", nullable = false)
-    private Publisher publisher;
-
-    public Publisher getPublisher() {
-        return publisher;
-    }
-
-    public void setPublisher(Publisher publisher) {
-        this.publisher = publisher;
-    }
-
-    @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private Integer id;
-
-    private String name;
-
-    private int year;
-
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "copies_id" , nullable = false)
-    private Copies copies;
 
     public Copies getCopies() {
         return copies;
@@ -83,5 +72,13 @@ public class Book {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Publisher getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(Publisher publisher) {
+        this.publisher = publisher;
     }
 }
