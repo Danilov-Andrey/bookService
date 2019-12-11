@@ -6,13 +6,11 @@ import com.nc.bookservice.entities.Copies;
 import com.nc.bookservice.entities.Publisher;
 import com.nc.bookservice.exceptions.authors.AuthorBooksNotFoundException;
 import com.nc.bookservice.exceptions.books.BookNotFoundException;
-import com.nc.bookservice.exceptions.publisher.PublisherBooksNotFoundException;
 import com.nc.bookservice.models.SaveBook;
 import com.nc.bookservice.models.UpdateBook;
 import com.nc.bookservice.entities.Author;
 import com.nc.bookservice.repos.BookRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -22,11 +20,11 @@ import java.util.List;
 @Service
 public class BookService {
     private BookRepo bookRepo;
-    private PublisherService publisherService;
+    private PublisherBookCommonService publisherBookCommonService;
 
     @Autowired
-    public BookService(@Lazy PublisherService publisherService, BookRepo bookRepo){
-        this.publisherService = publisherService;
+    public BookService(PublisherBookCommonService publisherBookCommonService, BookRepo bookRepo){
+        this.publisherBookCommonService = publisherBookCommonService;
         this.bookRepo = bookRepo;
     }
 
@@ -51,7 +49,7 @@ public class BookService {
 
     public Book saveBook(SaveBook newBook) {
         Author author = new Author(newBook.getAuthorFirstName(), newBook.getAuthorLastName());
-        Publisher publisher = publisherService.findByName(newBook.getPublisherName());
+        Publisher publisher = publisherBookCommonService.findByName(newBook.getPublisherName());
         if (publisher == null){
             publisher = new Publisher(newBook.getPublisherName());
         }
@@ -87,17 +85,6 @@ public class BookService {
         if (books.size() == 0){
             throw new AuthorBooksNotFoundException("Cannot find any books of this author");
         }
-        int totalPage = (int) Math.ceil((float)allBooks.size()/rowPerPage);
-        DataPagination<Book> dataPagination = new DataPagination<>(totalPage, pageNumber, books);
-        return dataPagination;
-    }
-
-    public DataPagination<Book> getPublishersBooks(int id, int pageNumber, int rowPerPage) {
-        List<Book> books = bookRepo.findByPublisher_Id(id, PageRequest.of(pageNumber - 1, rowPerPage));
-        if (books.size() == 0){
-            throw new PublisherBooksNotFoundException("Cannot find any books of this publisher");
-        }
-        List<Book> allBooks = bookRepo.findByPublisher_Id(id);
         int totalPage = (int) Math.ceil((float)allBooks.size()/rowPerPage);
         DataPagination<Book> dataPagination = new DataPagination<>(totalPage, pageNumber, books);
         return dataPagination;

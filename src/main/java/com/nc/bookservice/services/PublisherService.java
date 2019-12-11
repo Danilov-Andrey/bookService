@@ -7,7 +7,6 @@ import com.nc.bookservice.exceptions.publisher.PublisherExistsException;
 import com.nc.bookservice.exceptions.publisher.PublisherNotFoundException;
 import com.nc.bookservice.repos.PublisherRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -16,14 +15,12 @@ import java.util.List;
 
 @Service
 public class PublisherService {
-
     private PublisherRepo publisherRepo;
-
-    private BookService bookService;
+    private PublisherBookCommonService publisherBookCommonService;
 
     @Autowired
-    public PublisherService(@Lazy BookService bookService, PublisherRepo publisherRepo){
-        this.bookService = bookService;
+    public PublisherService(PublisherBookCommonService publisherBookCommonService, PublisherRepo publisherRepo){
+        this.publisherBookCommonService = publisherBookCommonService;
         this.publisherRepo = publisherRepo;
     }
 
@@ -47,7 +44,8 @@ public class PublisherService {
     }
 
     public Publisher savePublisher(Publisher newPublisher) {
-        if (findByName(newPublisher.getName()) != null){
+        Publisher dbPublisher = publisherBookCommonService.findByName(newPublisher.getName());
+        if (dbPublisher != null){
             throw new PublisherExistsException("This publisher exists");
         }
         return publisherRepo.save(newPublisher);
@@ -67,12 +65,7 @@ public class PublisherService {
     }
 
     public DataPagination<Book> findPublishersBooks(int id, int pageNumber, int rowPerPage) {
-        return bookService.getPublishersBooks(id, pageNumber, rowPerPage);
-    }
-
-    public Publisher findByName(String publisherName){
-        Publisher publisher = publisherRepo.findByName(publisherName);
-        return publisher;
+        return publisherBookCommonService.getPublishersBooks(id, pageNumber, rowPerPage);
     }
 }
 

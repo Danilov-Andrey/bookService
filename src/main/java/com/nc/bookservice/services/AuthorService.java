@@ -18,13 +18,13 @@ import java.util.List;
 @Service
 public class AuthorService {
     private AuthorRepo authorRepo;
-    private PublisherService publisherService;
+    private PublisherBookCommonService publisherBookCommonService;
     private BookService bookService;
 
     @Autowired
-    public AuthorService(AuthorRepo authorRepo, PublisherService publisherService, BookService bookService){
+    public AuthorService(AuthorRepo authorRepo, PublisherBookCommonService publisherBookCommonService, BookService bookService){
      this.authorRepo = authorRepo;
-     this.publisherService = publisherService;
+     this.publisherBookCommonService = publisherBookCommonService;
      this.bookService = bookService;
     }
 
@@ -71,11 +71,11 @@ public class AuthorService {
 
     public Book addNewBook(int id, SaveBook newBook) {
         Author author = findById(id);
-        Publisher publisher = publisherService.findByName(newBook.getPublisherName());
-        Copies copies = new Copies(newBook.getCount(), newBook.getRate());
+        Publisher publisher = publisherBookCommonService.findByName(newBook.getPublisherName());
         if (publisher == null){
             publisher = new Publisher(newBook.getPublisherName());
         }
+        Copies copies = new Copies(newBook.getCount(), newBook.getRate());
         Book book = new Book(author, publisher, newBook.getName(), newBook.getYear(), copies);
         return bookService.saveBook(book);
     }
