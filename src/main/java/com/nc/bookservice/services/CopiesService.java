@@ -6,6 +6,7 @@ import com.nc.bookservice.exceptions.copies.CopiesNotFoundException;
 import com.nc.bookservice.repos.CopiesRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class CopiesService {
         this.copiesRepo = copiesRepo;
     }
 
-    public Copies findById(int id) {
+    public Copies findCopiesById(int id) {
         Copies copies = copiesRepo.findById(id).orElse(null);
         if (copies == null){
             throw new CopiesNotFoundException("Cannot find copies with id: " + id);
@@ -28,9 +29,9 @@ public class CopiesService {
         return copies;
     }
 
-    public DataPagination<Copies> findAll(int pageNumber, int rowPerPage){
+    public DataPagination<Copies> findAllCopies(int pageNumber, int rowPerPage,  String sortBy, Sort.Direction direction){
         List<Copies> copies = new ArrayList<>();
-        copiesRepo.findAll(PageRequest.of(pageNumber - 1, rowPerPage)).forEach(copies::add);
+        copiesRepo.findAll(PageRequest.of(pageNumber - 1, rowPerPage,  Sort.by(direction, sortBy))).forEach(copies::add);
         if (copies.size() == 0){
             throw new CopiesNotFoundException("Cannot find any copies");
         }
@@ -40,7 +41,7 @@ public class CopiesService {
     }
 
     public Copies updateCopies(int id, Copies copies) {
-        Copies updatedCopies = findById(id);
+        Copies updatedCopies = findCopiesById(id);
         updatedCopies.setCount(copies.getCount());
         updatedCopies.setRate(copies.getRate());
         return copiesRepo.save(updatedCopies);

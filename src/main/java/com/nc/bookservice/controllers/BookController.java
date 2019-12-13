@@ -6,6 +6,7 @@ import com.nc.bookservice.models.UpdateBook;
 import com.nc.bookservice.entities.Book;
 import com.nc.bookservice.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +25,11 @@ public class BookController {
     @GetMapping
     public ResponseEntity<?> getAllBooks(
             @RequestParam int pageNumber,
-            @RequestParam int rowPerPage) {
+            @RequestParam int rowPerPage,
+            @RequestParam String sortBy,
+            @RequestParam Sort.Direction direction) {
         try{
-            DataPagination<Book> books = bookService.findAllBooks(pageNumber,rowPerPage);
+            DataPagination<Book> books = bookService.findAllBooks(pageNumber,rowPerPage, sortBy, direction);
             return new ResponseEntity<>(books, HttpStatus.OK);
         } catch (RuntimeException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -36,7 +39,7 @@ public class BookController {
     @GetMapping(path="/{id}")
     public ResponseEntity<?> getBook(@PathVariable int id) {
             try{
-                Book book = bookService.findById(id);
+                Book book = bookService.findBookById(id);
                 return new ResponseEntity<>(book, HttpStatus.OK);
             } catch (RuntimeException e){
                 return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -46,7 +49,7 @@ public class BookController {
     @DeleteMapping(path="/{id}")
     public ResponseEntity<?> deleteBook(@PathVariable int id) {
         try {
-            bookService.deleteById(id);
+            bookService.deleteBookById(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (RuntimeException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

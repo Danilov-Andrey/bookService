@@ -12,6 +12,7 @@ import com.nc.bookservice.entities.Author;
 import com.nc.bookservice.repos.BookRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class BookService {
         this.bookRepo = bookRepo;
     }
 
-    public Book findById(int id) {
+    public Book findBookById(int id) {
         Book book = bookRepo.findById(id).orElse(null);
         if (book == null){
             throw new BookNotFoundException("Cannot find book with id: " + id);
@@ -36,9 +37,9 @@ public class BookService {
         return book;
     }
 
-    public DataPagination<Book> findAllBooks(int pageNumber, int rowPerPage){
+    public DataPagination<Book> findAllBooks(int pageNumber, int rowPerPage, String sortBy, Sort.Direction direction){
         List<Book> books = new ArrayList<>();
-        bookRepo.findAll(PageRequest.of(pageNumber - 1, rowPerPage)).forEach(books::add);
+        bookRepo.findAll(PageRequest.of(pageNumber - 1, rowPerPage, Sort.by(direction, sortBy))).forEach(books::add);
         if (books.size() == 0){
             throw new BookNotFoundException("There are no any books");
         }
@@ -49,7 +50,7 @@ public class BookService {
 
     public Book saveBook(SaveBook newBook) {
         Author author = new Author(newBook.getAuthorFirstName(), newBook.getAuthorLastName());
-        Publisher publisher = publisherBookCommonService.findByName(newBook.getPublisherName());
+        Publisher publisher = publisherBookCommonService.findPublisherByName(newBook.getPublisherName());
         if (publisher == null){
             publisher = new Publisher(newBook.getPublisherName());
         }
@@ -63,7 +64,7 @@ public class BookService {
     }
 
     public Book updateBook(int id, UpdateBook book) {
-        Book updatedBook = findById(id);
+        Book updatedBook = findBookById(id);
         if (updatedBook == null) {
             throw new BookNotFoundException("Cannot find book with id: " + id);
         }
@@ -72,15 +73,15 @@ public class BookService {
         return bookRepo.save(updatedBook);
     }
 
-    public void deleteById(int id) {
+    public void deleteBookById(int id) {
         if (!bookRepo.existsById(id)) {
             throw new BookNotFoundException("Cannot find book with id: " + id);
         }
         bookRepo.deleteById(id);
     }
 
-    public DataPagination<Book> getAuthorsBooks(int id, int pageNumber, int rowPerPage) {
-        List<Book> books = bookRepo.findByAuthor_Id(id, PageRequest.of(pageNumber - 1, rowPerPage));
+    public DataPagination<Book> getAuthorsBooks(int id, int pageNumber, int rowPerPage, String sortBy, Sort.Direction direction) {
+        List<Book> books = bookRepo.findByAuthor_Id(id, PageRequest.of(pageNumber - 1, rowPerPage, Sort.by(direction, sortBy)));
         List<Book> allBooks = bookRepo.findByAuthor_Id(id);
         if (books.size() == 0){
             throw new AuthorBooksNotFoundException("Cannot find any books of this author");

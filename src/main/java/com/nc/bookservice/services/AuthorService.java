@@ -10,6 +10,7 @@ import com.nc.bookservice.entities.Author;
 import com.nc.bookservice.entities.Book;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -47,8 +48,8 @@ public class AuthorService {
         return dataPagination;
     }
 
-    public DataPagination<Book> findAuthorsBooks(int id, int pageNumber, int rowPerPage) {
-        return bookService.getAuthorsBooks(id, pageNumber, rowPerPage);
+    public DataPagination<Book> findAuthorsBooks(int id, int pageNumber, int rowPerPage,  String sortBy, Sort.Direction direction) {
+        return bookService.getAuthorsBooks(id, pageNumber, rowPerPage, sortBy, direction);
     }
 
     public Author saveAuthor(Author newAuthor) {
@@ -71,7 +72,7 @@ public class AuthorService {
 
     public Book addNewBook(int id, SaveBook newBook) {
         Author author = findById(id);
-        Publisher publisher = publisherBookCommonService.findByName(newBook.getPublisherName());
+        Publisher publisher = publisherBookCommonService.findPublisherByName(newBook.getPublisherName());
         if (publisher == null){
             publisher = new Publisher(newBook.getPublisherName());
         }

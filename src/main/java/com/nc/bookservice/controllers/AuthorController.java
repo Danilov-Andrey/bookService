@@ -6,6 +6,7 @@ import com.nc.bookservice.entities.Book;
 import com.nc.bookservice.models.SaveBook;
 import com.nc.bookservice.services.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,9 +40,11 @@ public class AuthorController {
     public ResponseEntity<?> getAuthorsBooks(
             @PathVariable("id") int id,
             @RequestParam int pageNumber,
-            @RequestParam int rowPerPage) {
+            @RequestParam int rowPerPage,
+            @RequestParam String sortBy,
+            @RequestParam Sort.Direction direction) {
         try {
-            DataPagination<Book> books = authorService.findAuthorsBooks(id, pageNumber, rowPerPage);
+            DataPagination<Book> books = authorService.findAuthorsBooks(id, pageNumber, rowPerPage, sortBy, direction);
             return new ResponseEntity<>(books, HttpStatus.OK);
         } catch (RuntimeException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

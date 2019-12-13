@@ -4,6 +4,7 @@ import com.nc.bookservice.dto.DataPagination;
 import com.nc.bookservice.entities.Copies;
 import com.nc.bookservice.services.CopiesService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +23,12 @@ public class CopiesController {
     @GetMapping
     public ResponseEntity<?> getAllCopies(
             @RequestParam int pageNumber,
-            @RequestParam int rowPerPage)
+            @RequestParam int rowPerPage,
+            @RequestParam String sortBy,
+            @RequestParam Sort.Direction direction)
     {
         try {
-            DataPagination<Copies> copies = copiesService.findAll(pageNumber, rowPerPage);
+            DataPagination<Copies> copies = copiesService.findAllCopies(pageNumber, rowPerPage, sortBy, direction);
             return new ResponseEntity<>(copies, HttpStatus.OK);
         } catch (RuntimeException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -35,7 +38,7 @@ public class CopiesController {
     @GetMapping(path = "/{id}")
     public ResponseEntity<?> getCopies(@PathVariable int id) {
         try {
-            Copies copies = copiesService.findById(id);
+            Copies copies = copiesService.findCopiesById(id);
             return new ResponseEntity<>(copies, HttpStatus.OK);
         } catch (RuntimeException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

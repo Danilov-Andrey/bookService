@@ -8,6 +8,7 @@ import com.nc.bookservice.repos.BookRepo;
 import com.nc.bookservice.repos.PublisherRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,13 +24,13 @@ public class PublisherBookCommonService {
         this.publisherRepo= publisherRepo;
     }
 
-    public Publisher findByName(String publisherName){
+    public Publisher findPublisherByName(String publisherName){
         Publisher publisher = publisherRepo.findByName(publisherName);
         return publisher;
     }
 
-    public DataPagination<Book> getPublishersBooks(int id, int pageNumber, int rowPerPage) {
-        List<Book> books = bookRepo.findByPublisher_Id(id, PageRequest.of(pageNumber - 1, rowPerPage));
+    public DataPagination<Book> getPublishersBooks(int id, int pageNumber, int rowPerPage, String sortBy, Sort.Direction direction) {
+        List<Book> books = bookRepo.findByPublisher_Id(id, PageRequest.of(pageNumber - 1, rowPerPage, Sort.by(direction, sortBy)));
         if (books.size() == 0){
             throw new PublisherBooksNotFoundException("Cannot find any books of this publisher");
         }
