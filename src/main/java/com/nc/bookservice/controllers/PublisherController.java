@@ -1,14 +1,16 @@
 package com.nc.bookservice.controllers;
 
-import com.nc.bookservice.dto.DataPagination;
-import com.nc.bookservice.entities.Book;
+ import com.nc.bookservice.entities.Book;
 import com.nc.bookservice.entities.Publisher;
 import com.nc.bookservice.services.PublisherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -23,14 +25,21 @@ public class PublisherController {
 
     @GetMapping
     public  ResponseEntity<?> getAllPublishers(
-            @RequestParam int pageNumber,
-            @RequestParam int rowPerPage,
-            @RequestParam String sortBy,
-            @RequestParam Sort.Direction direction)
+            @RequestParam (value = "name") Optional<String> name,
+            @RequestParam (value = "pageNumber") Optional<Integer> pageNumber,
+            @RequestParam (value = "rowPerPage") Optional<Integer> rowPerPage,
+            @RequestParam (value = "sortBy") Optional<String> sortBy,
+            @RequestParam (value = "direction") Optional<Sort.Direction> direction)
     {
+        Page<Publisher> publishers;
+        Publisher publisher;
         try{
-            DataPagination<Publisher> publishers = publisherService.findAllPublishers(pageNumber, rowPerPage, sortBy, direction);
-            return new ResponseEntity<>(publishers, HttpStatus.OK);
+            if (name.isEmpty()) {
+                publishers = publisherService.findAllPublishers(pageNumber.get(), rowPerPage.get(), sortBy.get(), direction.get());
+                return new ResponseEntity<>(publishers, HttpStatus.OK);
+            }
+            publisher = publisherService.findPublisherByName(name.get());
+            return new ResponseEntity<>(publisher, HttpStatus.OK);
         } catch (RuntimeException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
@@ -92,7 +101,7 @@ public class PublisherController {
             @RequestParam Sort.Direction direction)
     {
         try {
-            DataPagination<Book> books = publisherService.findPublishersBooks(id, pageNumber, rowPerPage, sortBy, direction);
+            Page<Book> books = publisherService.findPublishersBooks(id, pageNumber, rowPerPage, sortBy, direction);
             return new ResponseEntity<>(books, HttpStatus.OK);
         } catch (RuntimeException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

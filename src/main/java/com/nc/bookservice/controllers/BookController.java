@@ -1,15 +1,17 @@
 package com.nc.bookservice.controllers;
 
-import com.nc.bookservice.dto.DataPagination;
 import com.nc.bookservice.models.SaveBook;
 import com.nc.bookservice.models.UpdateBook;
 import com.nc.bookservice.entities.Book;
 import com.nc.bookservice.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -23,27 +25,23 @@ public class BookController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllBooks(
+    public ResponseEntity<?> getBooks(
+            @RequestParam (value = "name") Optional<String> name,
             @RequestParam int pageNumber,
             @RequestParam int rowPerPage,
             @RequestParam String sortBy,
             @RequestParam Sort.Direction direction) {
         try{
-            DataPagination<Book> books = bookService.findAllBooks(pageNumber,rowPerPage, sortBy, direction);
+            Page<Book> books;
+            if (name.isEmpty()){
+                books = bookService.findBooks(pageNumber,rowPerPage, sortBy, direction);
+            } else {
+                books = bookService.findBooksByName(name.get(), pageNumber, rowPerPage, sortBy, direction);
+            }
             return new ResponseEntity<>(books, HttpStatus.OK);
         } catch (RuntimeException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
-    }
-
-    @GetMapping(path="/{id}")
-    public ResponseEntity<?> getBook(@PathVariable int id) {
-            try{
-                Book book = bookService.findBookById(id);
-                return new ResponseEntity<>(book, HttpStatus.OK);
-            } catch (RuntimeException e){
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-            }
     }
 
     @DeleteMapping(path="/{id}")

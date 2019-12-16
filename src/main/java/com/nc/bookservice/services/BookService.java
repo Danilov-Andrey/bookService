@@ -1,7 +1,6 @@
 package com.nc.bookservice.services;
 
-import com.nc.bookservice.dto.DataPagination;
-import com.nc.bookservice.entities.Book;
+ import com.nc.bookservice.entities.Book;
 import com.nc.bookservice.entities.Copies;
 import com.nc.bookservice.entities.Publisher;
 import com.nc.bookservice.exceptions.authors.AuthorBooksNotFoundException;
@@ -11,12 +10,11 @@ import com.nc.bookservice.models.UpdateBook;
 import com.nc.bookservice.entities.Author;
 import com.nc.bookservice.repos.BookRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class BookService {
@@ -29,23 +27,20 @@ public class BookService {
         this.bookRepo = bookRepo;
     }
 
-    public Book findBookById(int id) {
-        Book book = bookRepo.findById(id).orElse(null);
-        if (book == null){
-            throw new BookNotFoundException("Cannot find book with id: " + id);
+    public Page<Book> findBooksByName(String name, int pageNumber, int rowPerPage, String sortBy, Sort.Direction direction) {
+        Page<Book> books = bookRepo.findByName(name, PageRequest.of(pageNumber - 1, rowPerPage, Sort.by(direction, sortBy)));
+        if (books.getTotalElements() == 0){
+            throw new BookNotFoundException("Cannot find books with name: " + name);
         }
-        return book;
+         return books;
     }
 
-    public DataPagination<Book> findAllBooks(int pageNumber, int rowPerPage, String sortBy, Sort.Direction direction){
-        List<Book> books = new ArrayList<>();
-        bookRepo.findAll(PageRequest.of(pageNumber - 1, rowPerPage, Sort.by(direction, sortBy))).forEach(books::add);
-        if (books.size() == 0){
+    public Page<Book> findBooks(int pageNumber, int rowPerPage, String sortBy, Sort.Direction direction){
+        Page<Book> books = bookRepo.findAll(PageRequest.of(pageNumber - 1, rowPerPage, Sort.by(direction, sortBy)));
+        if (books.getTotalElements() == 0){
             throw new BookNotFoundException("There are no any books");
         }
-        int totalPage = (int) Math.ceil((float)bookRepo.count()/rowPerPage);
-        DataPagination<Book> dataPagination = new DataPagination(totalPage, pageNumber, books);
-        return dataPagination;
+        return books;
     }
 
     public Book saveBook(SaveBook newBook) {
@@ -64,7 +59,7 @@ public class BookService {
     }
 
     public Book updateBook(int id, UpdateBook book) {
-        Book updatedBook = findBookById(id);
+        Book updatedBook = bookRepo.findById(id).orElse(null);
         if (updatedBook == null) {
             throw new BookNotFoundException("Cannot find book with id: " + id);
         }
@@ -80,14 +75,11 @@ public class BookService {
         bookRepo.deleteById(id);
     }
 
-    public DataPagination<Book> getAuthorsBooks(int id, int pageNumber, int rowPerPage, String sortBy, Sort.Direction direction) {
-        List<Book> books = bookRepo.findByAuthor_Id(id, PageRequest.of(pageNumber - 1, rowPerPage, Sort.by(direction, sortBy)));
-        List<Book> allBooks = bookRepo.findByAuthor_Id(id);
-        if (books.size() == 0){
+    public Page<Book> getAuthorsBooks(int id, int pageNumber, int rowPerPage, String sortBy, Sort.Direction direction) {
+        Page<Book> books = bookRepo.findByAuthor_Id(id, PageRequest.of(pageNumber - 1, rowPerPage, Sort.by(direction, sortBy)));
+        if (books.getTotalElements() == 0){
             throw new AuthorBooksNotFoundException("Cannot find any books of this author");
         }
-        int totalPage = (int) Math.ceil((float)allBooks.size()/rowPerPage);
-        DataPagination<Book> dataPagination = new DataPagination<>(totalPage, pageNumber, books);
-        return dataPagination;
+        return books;
     }
 }

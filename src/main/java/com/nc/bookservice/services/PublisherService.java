@@ -1,18 +1,16 @@
 package com.nc.bookservice.services;
 
-import com.nc.bookservice.dto.DataPagination;
 import com.nc.bookservice.entities.Book;
 import com.nc.bookservice.entities.Publisher;
 import com.nc.bookservice.exceptions.publisher.PublisherExistsException;
 import com.nc.bookservice.exceptions.publisher.PublisherNotFoundException;
 import com.nc.bookservice.repos.PublisherRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class PublisherService {
@@ -33,20 +31,25 @@ public class PublisherService {
         return publisher;
     }
 
-    public DataPagination<Publisher> findAllPublishers(int pageNumber, int rowPerPage,  String sortBy, Sort.Direction direction){
-        List<Publisher> publishers = new ArrayList<>();
-        publisherRepo.findAll(PageRequest.of(pageNumber - 1, rowPerPage, Sort.by(direction, sortBy))).forEach(publishers::add);
-        if(publishers.size() == 0) {
+    public Publisher findPublisherByName(String name) {
+        Publisher publisher = publisherRepo.findByName(name);
+        if (publisher == null){
+            throw new PublisherNotFoundException("Cannot find publisher with name " + name);
+        }
+        return publisher;
+    }
+
+    public Page<Publisher> findAllPublishers(int pageNumber, int rowPerPage, String sortBy, Sort.Direction direction){
+        Page<Publisher> publishers = publisherRepo.findAll(PageRequest.of(pageNumber - 1, rowPerPage, Sort.by(direction, sortBy)));
+        if(publishers.getTotalElements() == 0) {
             throw new PublisherNotFoundException("Cannot find any publishers");
         }
-        int totalPage = (int) Math.ceil((float)publisherRepo.count()/rowPerPage);
-        DataPagination<Publisher> dataPagination = new DataPagination(totalPage, pageNumber, publishers);
-        return dataPagination;
+        return publishers;
     }
 
     public Publisher savePublisher(Publisher newPublisher) {
         Publisher dbPublisher = publisherBookCommonService.findPublisherByName(newPublisher.getName());
-        if (dbPublisher != null){
+        if (dbPublisher != null ){
             throw new PublisherExistsException("This publisher exists");
         }
         return publisherRepo.save(newPublisher);
@@ -65,7 +68,7 @@ public class PublisherService {
         publisherRepo.deleteById(id);
     }
 
-    public DataPagination<Book> findPublishersBooks(int id, int pageNumber, int rowPerPage, String sortBy, Sort.Direction direction) {
+    public Page<Book> findPublishersBooks(int id, int pageNumber, int rowPerPage, String sortBy, Sort.Direction direction) {
         return publisherBookCommonService.getPublishersBooks(id, pageNumber, rowPerPage, sortBy, direction);
     }
 }

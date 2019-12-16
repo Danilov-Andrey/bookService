@@ -1,17 +1,16 @@
 package com.nc.bookservice.controllers;
 
-import com.nc.bookservice.dto.DataPagination;
-import com.nc.bookservice.entities.Author;
+ import com.nc.bookservice.entities.Author;
 import com.nc.bookservice.entities.Book;
 import com.nc.bookservice.models.SaveBook;
 import com.nc.bookservice.services.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.net.URI;
-import java.net.URISyntaxException;
+ import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -25,12 +24,23 @@ public class AuthorController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllAuthors(
+    public ResponseEntity<?> getAuthors(
+            @RequestParam (value = "name") Optional<String> name,
+            @RequestParam (value = "type") Optional<String> type,
             @RequestParam int pageNumber,
-            @RequestParam int rowPerPage) {
+            @RequestParam int rowPerPage,
+            @RequestParam String sortBy,
+            @RequestParam Sort.Direction direction) {
         try {
-            DataPagination<Author> authors = authorService.findAllAuthors(pageNumber,rowPerPage);
+            Page<Author> authors;
+            if (name.isEmpty()){
+                authors = authorService.findAuthors(pageNumber,rowPerPage,sortBy,direction);
+            } else {
+                authors = authorService.findAuthorByName(name.get(), type.get(), pageNumber,rowPerPage,sortBy,direction);
+            }
             return new ResponseEntity<>(authors, HttpStatus.OK);
+        } catch (IllegalStateException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (RuntimeException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
@@ -44,7 +54,7 @@ public class AuthorController {
             @RequestParam String sortBy,
             @RequestParam Sort.Direction direction) {
         try {
-            DataPagination<Book> books = authorService.findAuthorsBooks(id, pageNumber, rowPerPage, sortBy, direction);
+            Page<Book> books = authorService.findAuthorsBooks(id, pageNumber, rowPerPage, sortBy, direction);
             return new ResponseEntity<>(books, HttpStatus.OK);
         } catch (RuntimeException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

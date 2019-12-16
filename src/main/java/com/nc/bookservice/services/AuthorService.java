@@ -1,7 +1,6 @@
 package com.nc.bookservice.services;
 
-import com.nc.bookservice.dto.DataPagination;
-import com.nc.bookservice.entities.Copies;
+ import com.nc.bookservice.entities.Copies;
 import com.nc.bookservice.entities.Publisher;
 import com.nc.bookservice.exceptions.authors.AuthorNotFoundException;
 import com.nc.bookservice.models.SaveBook;
@@ -9,12 +8,10 @@ import com.nc.bookservice.repos.AuthorRepo;
 import com.nc.bookservice.entities.Author;
 import com.nc.bookservice.entities.Book;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class AuthorService {
@@ -37,18 +34,39 @@ public class AuthorService {
         return author;
     }
 
-    public DataPagination<Author> findAllAuthors(int pageNumber, int rowPerPage) {
-        List<Author> authors = new ArrayList<>();
-        authorRepo.findAll(PageRequest.of(pageNumber - 1, rowPerPage)).forEach(authors::add);
-        if (authors.size() == 0){
-            throw new AuthorNotFoundException("There are no any authors");
+    public Page<Author> findAuthorByName(String name, String type, int pageNumber, int rowPerPage, String sortBy, Sort.Direction direction) {
+        Page<Author> authors;
+        String[] authorsName = name.split(" ");
+        PageRequest request = PageRequest.of(pageNumber - 1, rowPerPage, Sort.by(direction, sortBy));
+        switch (type){
+            case "partName":
+                authors = authorRepo.findByLastNameOrFirstName(name, name, request);
+                break;
+            case "fullName":
+                if (authorsName.length != 2){
+                    throw new IllegalStateException("Unexpected name: " + name + ", for type: " + type);
+                }
+                authors = authorRepo.findByLastNameAndFirstName(authorsName[0], authorsName[1],authorsName[0], authorsName[1], request);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + type);
         }
-        int totalPage = (int) Math.ceil((float)authorRepo.count()/rowPerPage);
-        DataPagination<Author> dataPagination = new DataPagination(totalPage, pageNumber, authors);
-        return dataPagination;
+
+        if (authors.getTotalElements() == 0){
+            throw new AuthorNotFoundException("There are no any authors with name " + name);
+        }
+         return authors;
     }
 
-    public DataPagination<Book> findAuthorsBooks(int id, int pageNumber, int rowPerPage,  String sortBy, Sort.Direction direction) {
+    public Page<Author> findAuthors(int pageNumber, int rowPerPage, String sortBy, Sort.Direction direction) {
+        Page<Author> authors = authorRepo.findAll(PageRequest.of(pageNumber - 1, rowPerPage, Sort.by(direction, sortBy)));
+        if (authors.getTotalElements() == 0){
+            throw new AuthorNotFoundException("There are no any authors");
+        }
+        return authors;
+    }
+
+    public Page<Book> findAuthorsBooks(int id, int pageNumber, int rowPerPage,  String sortBy, Sort.Direction direction) {
         return bookService.getAuthorsBooks(id, pageNumber, rowPerPage, sortBy, direction);
     }
 
