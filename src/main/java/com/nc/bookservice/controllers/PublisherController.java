@@ -24,7 +24,7 @@ public class PublisherController {
     }
 
     @GetMapping
-    public  ResponseEntity<?> getAllPublishers(
+    public  ResponseEntity<?> getPublishers(
             @RequestParam (value = "name") Optional<String> name,
             @RequestParam (value = "pageNumber") Optional<Integer> pageNumber,
             @RequestParam (value = "rowPerPage") Optional<Integer> rowPerPage,

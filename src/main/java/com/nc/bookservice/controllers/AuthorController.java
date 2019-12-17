@@ -26,7 +26,6 @@ public class AuthorController {
     @GetMapping
     public ResponseEntity<?> getAuthors(
             @RequestParam (value = "name") Optional<String> name,
-            @RequestParam (value = "type") Optional<String> type,
             @RequestParam int pageNumber,
             @RequestParam int rowPerPage,
             @RequestParam String sortBy,
@@ -36,7 +35,7 @@ public class AuthorController {
             if (name.isEmpty()){
                 authors = authorService.findAuthors(pageNumber,rowPerPage,sortBy,direction);
             } else {
-                authors = authorService.findAuthorByName(name.get(), type.get(), pageNumber,rowPerPage,sortBy,direction);
+                authors = authorService.findAuthorByName(name.get(), pageNumber,rowPerPage,sortBy,direction);
             }
             return new ResponseEntity<>(authors, HttpStatus.OK);
         } catch (IllegalStateException e){

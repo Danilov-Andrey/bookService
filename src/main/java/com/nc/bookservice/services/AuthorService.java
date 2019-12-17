@@ -34,29 +34,17 @@ public class AuthorService {
         return author;
     }
 
-    public Page<Author> findAuthorByName(String name, String type, int pageNumber, int rowPerPage, String sortBy, Sort.Direction direction) {
+    public Page<Author> findAuthorByName(String name, int pageNumber, int rowPerPage, String sortBy, Sort.Direction direction) {
         Page<Author> authors;
         String[] authorsName = name.split(" ");
         PageRequest request = PageRequest.of(pageNumber - 1, rowPerPage, Sort.by(direction, sortBy));
-        switch (type){
-            case "partName":
-                if (authorsName.length != 1){
-                    throw new IllegalStateException("Unexpected name: " + name + ", for type: " + type);
-                }
-                authors = authorRepo.findByLastNameOrFirstName(name, name, request);
-                break;
-            case "fullName":
-                if (authorsName.length != 2){
-                    throw new IllegalStateException("Unexpected name: " + name + ", for type: " + type);
-                }
-                authors = authorRepo.findByLastNameAndFirstName(authorsName[0], authorsName[1], authorsName[0], authorsName[1], request);
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + type);
+        if (authorsName.length != 2) {
+            throw new IllegalStateException("Unexpected name: " + name);
         }
+        authors = authorRepo.findByLastNameAndFirstName(authorsName[0], authorsName[1], request);
 
         if (authors.getTotalElements() == 0){
-            throw new AuthorNotFoundException("There are no any authors with name " + name);
+            throw new AuthorNotFoundException("There are no any authors with firstname " + authorsName[0] + " and lastname " + authorsName[1]);
         }
          return authors;
     }

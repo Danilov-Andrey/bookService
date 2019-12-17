@@ -10,13 +10,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 public interface AuthorRepo extends PagingAndSortingRepository<Author, Integer>,
         JpaSpecificationExecutor<Author> {
     @Query(
-            value = "select * from author where author.first_name = ? or author.last_name = ? ",
+            value = "select * from author where author.first_name = ? and author.last_name = ? ",
             nativeQuery = true)
-    Page<Author> findByLastNameOrFirstName(String firstArg, String secondArg, PageRequest pageable);
-
-    @Query(
-            value = "select * from author where author.first_name = ? and author.last_name = ? or author.last_name = ? and author.first_name = ?",
-            nativeQuery = true)
-    Page<Author> findByLastNameAndFirstName(String firstArg, String secondArg, String thirdArg, String fourthArg, PageRequest pageable);
-
+    Page<Author> findByLastNameAndFirstName(String firstName, String lastName, PageRequest pageable);
  }
