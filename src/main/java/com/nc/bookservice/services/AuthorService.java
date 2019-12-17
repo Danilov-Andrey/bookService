@@ -40,13 +40,16 @@ public class AuthorService {
         PageRequest request = PageRequest.of(pageNumber - 1, rowPerPage, Sort.by(direction, sortBy));
         switch (type){
             case "partName":
+                if (authorsName.length != 1){
+                    throw new IllegalStateException("Unexpected name: " + name + ", for type: " + type);
+                }
                 authors = authorRepo.findByLastNameOrFirstName(name, name, request);
                 break;
             case "fullName":
                 if (authorsName.length != 2){
                     throw new IllegalStateException("Unexpected name: " + name + ", for type: " + type);
                 }
-                authors = authorRepo.findByLastNameAndFirstName(authorsName[0], authorsName[1],authorsName[0], authorsName[1], request);
+                authors = authorRepo.findByLastNameAndFirstName(authorsName[0], authorsName[1], authorsName[0], authorsName[1], request);
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + type);
