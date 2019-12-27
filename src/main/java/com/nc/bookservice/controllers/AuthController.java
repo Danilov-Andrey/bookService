@@ -21,8 +21,8 @@ public class AuthController {
     }
 
     @GetMapping("/validateUser")
-    public Principal validateUser(Principal user) {
-        return user;
+    public ResponseEntity<?> validateUser(Principal user) {
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @PostMapping

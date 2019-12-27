@@ -48,7 +48,7 @@ public class PublisherService {
     }
 
     public Publisher savePublisher(Publisher newPublisher) {
-        Publisher dbPublisher = publisherBookCommonService.findPublisherByName(newPublisher.getName());
+        Publisher dbPublisher =  publisherRepo.findByName(newPublisher.getName());
         if (dbPublisher != null ){
             throw new PublisherExistsException("This publisher exists");
         }
@@ -56,6 +56,10 @@ public class PublisherService {
     }
 
     public Publisher updatePublisher(int id, Publisher publisher) {
+        Publisher dbPublisher =  publisherRepo.findByName(publisher.getName());
+        if (dbPublisher != null ){
+            throw new PublisherExistsException("This publisher exists");
+        }
         Publisher updatedPublisher = findPublisherById(id);
         updatedPublisher.setName(publisher.getName());
         return publisherRepo.save(updatedPublisher);

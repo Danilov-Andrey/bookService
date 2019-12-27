@@ -2,7 +2,8 @@ package com.nc.bookservice.controllers;
 
  import com.nc.bookservice.entities.Book;
 import com.nc.bookservice.entities.Publisher;
-import com.nc.bookservice.services.PublisherService;
+ import com.nc.bookservice.exceptions.publisher.PublisherExistsException;
+ import com.nc.bookservice.services.PublisherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -52,10 +53,9 @@ public class PublisherController {
         try {
             Publisher publisher = publisherService.savePublisher(newPublisher);
             return new ResponseEntity<>(publisher, HttpStatus.CREATED);
-        } catch (RuntimeException e){
+        }  catch (RuntimeException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-
     }
 
     @PutMapping("/{id}")
@@ -66,6 +66,8 @@ public class PublisherController {
         try {
             Publisher publisher =  publisherService.updatePublisher(id, newPublisher);
             return new ResponseEntity<>(publisher, HttpStatus.OK);
+        } catch (PublisherExistsException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (RuntimeException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
