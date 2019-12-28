@@ -81,6 +81,9 @@ public class AuthorService {
 
     public Book addNewBook(int id, SaveBook newBook) {
         Author author = findById(id);
+        if (author == null) {
+            throw new AuthorNotFoundException("Cannot find author with id: " + id);
+        }
         Publisher publisher = publisherBookCommonService.findPublisherByName(newBook.getPublisherName());
         if (publisher == null){
             publisher = new Publisher(newBook.getPublisherName());
