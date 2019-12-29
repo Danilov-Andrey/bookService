@@ -49,7 +49,7 @@ public class PublisherService {
 
     public Publisher savePublisher(Publisher newPublisher) {
         Publisher dbPublisher =  publisherRepo.findByName(newPublisher.getName());
-        if (dbPublisher != null ){
+        if (dbPublisher != null){
             throw new PublisherExistsException("This publisher exists");
         }
         return publisherRepo.save(newPublisher);
