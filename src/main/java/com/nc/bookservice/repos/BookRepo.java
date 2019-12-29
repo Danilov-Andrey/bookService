@@ -12,6 +12,8 @@ public interface BookRepo extends PagingAndSortingRepository<Book, Integer>,
 
     Page<Book> findByPublisher_Id(int publisher_id, Pageable pageable);
 
+    Book findByCopies_Id(int publisher_id);
+
     Page<Book> findByName( String name, Pageable pageable);
 
 }

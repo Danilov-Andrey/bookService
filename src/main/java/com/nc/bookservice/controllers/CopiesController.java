@@ -1,5 +1,6 @@
 package com.nc.bookservice.controllers;
 
+import com.nc.bookservice.entities.Book;
 import com.nc.bookservice.entities.Copies;
 import com.nc.bookservice.services.CopiesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,18 @@ public class CopiesController {
         try {
             Copies copies = copiesService.findCopiesById(id);
             return new ResponseEntity<>(copies, HttpStatus.OK);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping(path = "/{id}/books")
+    public ResponseEntity<?> getBookByCopiesId(
+            @PathVariable("id") int id
+    ) {
+        try {
+            Book book = copiesService.findBookByCopiesId(id);
+            return new ResponseEntity<>(book, HttpStatus.OK);
         } catch (RuntimeException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }

@@ -1,5 +1,6 @@
 package com.nc.bookservice.services;
 
+import com.nc.bookservice.entities.Book;
 import com.nc.bookservice.entities.Copies;
 import com.nc.bookservice.exceptions.copies.CopiesNotFoundException;
 import com.nc.bookservice.repos.CopiesRepo;
@@ -12,10 +13,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class CopiesService {
     private CopiesRepo copiesRepo;
+    private BookService bookService;
 
     @Autowired
-    public CopiesService(CopiesRepo copiesRepo){
+    public CopiesService(CopiesRepo copiesRepo, BookService bookService){
         this.copiesRepo = copiesRepo;
+        this.bookService = bookService;
     }
 
     public Copies findCopiesById(int id) {
@@ -39,5 +42,9 @@ public class CopiesService {
         updatedCopies.setCount(copies.getCount());
         updatedCopies.setRate(copies.getRate());
         return copiesRepo.save(updatedCopies);
+    }
+
+    public Book findBookByCopiesId(int id) {
+        return bookService.getBookByCopiesId(id);
     }
 }

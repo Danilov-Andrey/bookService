@@ -82,4 +82,12 @@ public class BookService {
         }
         return books;
     }
+
+    public Book getBookByCopiesId(int id) {
+        Book book = bookRepo.findByCopies_Id(id);
+        if (book == null){
+            throw new AuthorBooksNotFoundException("Cannot find book with copies id " + id);
+        }
+        return book;
+    }
 }
