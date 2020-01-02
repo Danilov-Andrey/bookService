@@ -20,7 +20,7 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @GetMapping("/validateUser")
+    @GetMapping("/validate-user")
     public ResponseEntity<?> validateUser(Principal user) {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
